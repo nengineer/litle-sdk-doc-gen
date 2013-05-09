@@ -1,3 +1,4 @@
+package extractXML;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
@@ -19,7 +20,8 @@ public class ReadXMLFile {
 				Node node = nodes.item(i);
 				if(node.getNodeType() == Node.ELEMENT_NODE){
 					Element e = (Element) node;
-					processDIV(e);
+					DIVElement div = new DIVElement();
+					div.processDIV(e);
 				}
 
 			}
@@ -27,27 +29,9 @@ public class ReadXMLFile {
 		
 	}
 	
-	public void processDIV(Element div){
-		System.out.println("Item Name: " + extractItemName(div));
-		//extractParentElement(div);
-	}
+
 	
-	public String extractItemName(Element div){
-		NodeList nodes = div.getElementsByTagName("H1-Head1");  
-		for(int i=0; i< nodes.getLength(); i++){
-				Node eleA = nodes.item(i);
-				if(eleA.getNodeType() == Node.ELEMENT_NODE){
-					if(eleA.getTextContent()!= ""){
-						return eleA.getTextContent().replaceAll("\\s","");
-					}
-				}
-		}
-		return "";
-	}
-		
-	public void extractParentElement(Element div){
-		
-	}
+
 	
  
   public static void main(String argv[]) {
