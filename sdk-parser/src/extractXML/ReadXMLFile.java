@@ -15,7 +15,9 @@ public class ReadXMLFile {
 	
 	private ArrayList<DIVElement> DIVlist;
 	
-	ReadXMLFile(){};
+	ReadXMLFile(){
+		
+	};
 	
 	public void extractDIVs(Document doc){
 		
@@ -27,7 +29,7 @@ public class ReadXMLFile {
 					Element e = (Element) node;
 					DIVElement div = new DIVElement();
 					div.processDIV(e);
-					DIVlist.add(div);
+					//DIVlist.add(div);
 				}
 
 			}
@@ -39,12 +41,8 @@ public class ReadXMLFile {
 		return DIVlist;
 	}
 	
-
-	
-
-	
  
-  public static void main(String argv[]) {
+	public static void main(String argv[]) {
  
     try {
  
