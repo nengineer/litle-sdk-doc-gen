@@ -1,14 +1,19 @@
 package extractXML;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.DocumentBuilder;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
-import org.w3c.dom.Element;
 import java.io.File;
+import java.util.ArrayList;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
  
 public class ReadXMLFile {
+	
+	private ArrayList<DIVElement> DIVlist;
 	
 	ReadXMLFile(){};
 	
@@ -22,11 +27,16 @@ public class ReadXMLFile {
 					Element e = (Element) node;
 					DIVElement div = new DIVElement();
 					div.processDIV(e);
+					DIVlist.add(div);
 				}
 
 			}
 		}
 		
+	}
+	
+	public ArrayList<DIVElement> getDIVs(){
+		return DIVlist;
 	}
 	
 
