@@ -1,5 +1,6 @@
 package extractXML;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -11,13 +12,13 @@ public class DIVElement {
 	private String eleName;
 	private String eleType;
 	private ArrayList<String> parentElements;
-	private ArrayList<String> childElements;
+	private HashMap<String, Integer> childElements; //1 for required, 0 for optional
 	//private ArrayList<Attribute> attributes;
 	
 	public DIVElement(){
 		this.eleName = "";
 		this.parentElements = new ArrayList<String>();
-		this.childElements = new ArrayList<String>();
+		this.childElements = new HashMap<String, Integer>();
 	}
 	
 	public String getEleName() {
@@ -48,12 +49,16 @@ public class DIVElement {
 		this.parentElements.add(e);
 	}
 
-	public ArrayList<String> getChildElements() {
+	public HashMap<String, Integer> getChildElements() {
 		return childElements;
 	}
 
-	public void setChildElements(ArrayList<String> childElements) {
+	public void setChildElements(HashMap<String, Integer> childElements) {
 		this.childElements = childElements;
+	}
+	
+	public void addEleToChildElements(String e){
+		this.parentElements.add(e);
 	}
 
 	
@@ -97,13 +102,16 @@ public class DIVElement {
 			Node node = nodes.item(i);
 			String nodeContent = trimString(node.getTextContent());
 			if(nodeContent.equals(XMLLookUpStrings.PARENTELEMENTS)){
-				extractParentElement(node);
+				extractParentElements(node);
+			}
+			if(nodeContent.equals(XMLLookUpStrings.CHILDELEMENTS)){
+				extractChildElements(node);
 			}
 		}
 	}
 	
 	
-	public void extractParentElement(Node node){
+	public void extractParentElements(Node node){
 		Node sibling = node.getNextSibling();
 		while(sibling != null) {
 		    if ( sibling.getNodeType() == Node.ELEMENT_NODE ) {
@@ -121,7 +129,26 @@ public class DIVElement {
 
 		    sibling = sibling.getNextSibling();
 		}
+	}
+	
+	public void extractChildElements(Node node){
+		Node sibling = node.getNextSibling();
+		while(sibling != null) {
+		    if ( sibling.getNodeType() == Node.ELEMENT_NODE ) {
+		    	Element ce = (Element)sibling;
+				NodeList children = ce.getElementsByTagName(XMLLookUpStrings.COLOR);
+				for (int i=0; i<children.getLength(); i++){
+					Node child = children.item(i);
+					String childName = trimString(child.getTextContent());
+					if(childName != ""){
+						this.addEleToChildElements(childName);
+					}
+				}
+		    	break;
+		    }
 
+		    sibling = sibling.getNextSibling();
+		}
 	}
 	
 	private String trimString(String raw){
