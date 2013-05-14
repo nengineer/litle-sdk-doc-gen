@@ -1,7 +1,11 @@
 package extracter;
 
 import java.util.ArrayList;
+//import java.util.HashMap;
 import java.util.List;
+
+
+import extractXML.DIVElement;
 
 public class DataExtracterForJava implements DataExtracter{
 
@@ -11,10 +15,22 @@ public class DataExtracterForJava implements DataExtracter{
 	
 	
 	@Override
-	public void extractData(Employee e) {
+	public void extractData(DIVElement div) {
 		// TODO Auto-generated method stub
 		DataExtracterForJava dx = this;
 		
+		dx.getDList().add("The " + div.getEleName() + "field is required by :");
+		
+		List<String> plist = new ArrayList<String>();
+		
+		for(String p : plist){
+			dx.getDList().add("@see " + p);
+		}
+		
+		// add further description here
+		
+		
+		/**
 		dx.getDList().add("Employee Id is : " + String.valueOf(e.getId()));
 		
 		dx.getDList().add("Employee first name is : " + e.getFirstName());
@@ -24,6 +40,9 @@ public class DataExtracterForJava implements DataExtracter{
 		dx.getDList().add("Employee nick name is : " + e.getNickName());
 		
 		dx.getDList().add(String.valueOf("Employee salary is : " + e.getSalary()));
+		
+		
+		*/
 
 		
 	}
