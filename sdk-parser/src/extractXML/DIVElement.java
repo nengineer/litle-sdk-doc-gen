@@ -1,6 +1,7 @@
 package extractXML;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -12,13 +13,13 @@ public class DIVElement {
 	private String eleName;
 	private String eleType;
 	private ArrayList<String> parentElements;
-	private HashMap<String, Integer> childElements; //1 for required, 0 for optional
+	private HashMap<String, String> childElements; 
 	//private ArrayList<Attribute> attributes;
 	
 	public DIVElement(){
 		this.eleName = "";
 		this.parentElements = new ArrayList<String>();
-		this.childElements = new HashMap<String, Integer>();
+		this.childElements = new HashMap<String, String>();
 	}
 	
 	public String getEleName() {
@@ -49,16 +50,16 @@ public class DIVElement {
 		this.parentElements.add(e);
 	}
 
-	public HashMap<String, Integer> getChildElements() {
+	public HashMap<String, String> getChildElements() {
 		return childElements;
 	}
 
-	public void setChildElements(HashMap<String, Integer> childElements) {
+	public void setChildElements(HashMap<String, String> childElements) {
 		this.childElements = childElements;
 	}
 	
-	public void addEleToChildElements(String e){
-		this.parentElements.add(e);
+	public void addEleToChildElements(String e, String option){
+		this.childElements.put(e, option);
 	}
 
 	
@@ -72,6 +73,9 @@ public class DIVElement {
 		this.extractSubHeaderElement(div);
 		for(String s: parentElements){
 			System.out.println("Parent Element: "+s);
+		}
+		for(Entry<String, String> i: childElements.entrySet()){
+			System.out.println("Child Element: "+i.getKey()+", "+i.getValue());
 		}
 	}
 	
@@ -93,7 +97,7 @@ public class DIVElement {
 	}
 	
 	/**
-	 * extract subheader elements including parentElements, childElements, and attributes
+	 * extract sub header elements including parentElements, childElements, and attributes
 	 * @param div
 	 */
 	public void extractSubHeaderElement(Element div){
@@ -126,27 +130,31 @@ public class DIVElement {
 				}
 		    	break;
 		    }
-
 		    sibling = sibling.getNextSibling();
 		}
 	}
 	
 	public void extractChildElements(Node node){
 		Node sibling = node.getNextSibling();
+		int  count = 0; //there are at most two sets of childElements: required and optional
 		while(sibling != null) {
 		    if ( sibling.getNodeType() == Node.ELEMENT_NODE ) {
+		    	count++;
 		    	Element ce = (Element)sibling;
+		    	String option = trimString(ce.getTextContent()).replaceAll(":.*", "");
 				NodeList children = ce.getElementsByTagName(XMLLookUpStrings.COLOR);
 				for (int i=0; i<children.getLength(); i++){
 					Node child = children.item(i);
 					String childName = trimString(child.getTextContent());
 					if(childName != ""){
-						this.addEleToChildElements(childName);
+						this.addEleToChildElements(childName, option);
 					}
 				}
-		    	break;
+				if(count>=2){
+					break;
+				}
+				
 		    }
-
 		    sibling = sibling.getNextSibling();
 		}
 	}
