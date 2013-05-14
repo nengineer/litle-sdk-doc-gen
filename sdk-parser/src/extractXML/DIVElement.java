@@ -92,8 +92,28 @@ public class DIVElement {
 					if(itemName != ""){
 						this.setEleName(itemName);
 					}
+					extractDescription(eleA);
 				}
 		}
+	}
+	
+	public void extractDescription(Node node){
+		Node sibling = node.getNextSibling();
+		while(sibling != null) {
+		    if ( sibling.getNodeType() == Node.ELEMENT_NODE ) {
+		    	//System.out.println(sibling.getTextContent().replaceAll("\n", ""));
+		    	String s1 = sibling.getTextContent().replaceAll("\n", "");
+		    	System.out.println(s1.replaceAll("\b[a-zA-Z0-9_],|, and |, ", "\n@"));
+		    	formatDescription(sibling.getTextContent());
+		    	break;
+		    }
+		    sibling = sibling.getNextSibling();
+		}
+		
+	}
+	
+	private String formatDescription(String raw){
+		return "";
 	}
 	
 	/**
@@ -114,7 +134,7 @@ public class DIVElement {
 		}
 	}
 	
-	
+
 	public void extractParentElements(Node node){
 		Node sibling = node.getNextSibling();
 		while(sibling != null) {
