@@ -34,6 +34,8 @@ public class DocGenerator {
 			
 			List<DIVElement> eList = rd.getDIVs();
 			
+			
+			
 			DataExtracterForJava dx = new DataExtracterForJava();
 			dx.extractData(eList.get(0));
 			
