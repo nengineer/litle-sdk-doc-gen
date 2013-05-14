@@ -13,7 +13,7 @@ import org.w3c.dom.NodeList;
  
 public class ReadXMLFile {
 	
-	private ArrayList<DIVElement> DIVlist;
+	private ArrayList<DIVElement> DIVlist = new ArrayList<DIVElement>();
 	
 	ReadXMLFile(){};
 	
