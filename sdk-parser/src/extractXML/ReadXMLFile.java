@@ -15,7 +15,7 @@ public class ReadXMLFile {
 	public void extractDIVs(Document doc){
 		
 		if(doc != null){
-			NodeList nodes = doc.getElementsByTagName("DIV");
+			NodeList nodes = doc.getElementsByTagName(XMLLookUpStrings.DIV);
 			for(int i=0; i<nodes.getLength(); i++){
 				Node node = nodes.item(i);
 				if(node.getNodeType() == Node.ELEMENT_NODE){
@@ -46,39 +46,12 @@ public class ReadXMLFile {
  
 	doc.getDocumentElement().normalize();
 	
-	ReadXMLFile x = new ReadXMLFile();
+	ReadXMLFile extractor = new ReadXMLFile();
  
 	System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
 	
-	x.extractDIVs(doc);
- 
-//	
-//	Node ele0 = doc.getElementsByTagName("A").item(0);
-//	String parentEle = ele0.getTextContent();
-//	if(parentEle.equals("Parent Elements")){
-//		
-//	}
-// 
-//	System.out.println("\n");
-// 
-//	for (int temp = 0; temp < nList.getLength(); temp++) {
-// 
-//		Node nNode = nList.item(temp);
-// 
-//		System.out.println("\nCurrent Element :" + nNode.getNodeName());
-// 
-//		if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-// 
-//			Element eElement = (Element) nNode;
-// 
-//			System.out.println("Staff id : " + eElement.getAttribute("id"));
-//			System.out.println("First Name : " + eElement.getElementsByTagName("firstname").item(0).getTextContent());
-//			System.out.println("Last Name : " + eElement.getElementsByTagName("lastname").item(0).getTextContent());
-//			System.out.println("Nick Name : " + eElement.getElementsByTagName("nickname").item(0).getTextContent());
-//			System.out.println("Salary : " + eElement.getElementsByTagName("salary").item(0).getTextContent());
-// 
-//			}
-//	}
+	extractor.extractDIVs(doc);
+
     } catch (Exception e) {
 	e.printStackTrace();
     }
