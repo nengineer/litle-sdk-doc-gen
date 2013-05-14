@@ -30,7 +30,7 @@ public class StringLocaterForJava implements StringLocater {
 				String currentLine;
 				while((currentLine = reader.readLine()) != null){
 					lineNum++;
-					if(currentLine.equals(key)){
+					if(currentLine.contains(key) && currentLine.contains("{")){
 						sTemp.getLocations().add(lineNum);
 					} 
 				}

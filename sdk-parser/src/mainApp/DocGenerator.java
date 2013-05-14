@@ -10,7 +10,8 @@ import Locaters.FileLocater;
 import Locaters.StringLocaterForJava;
 
 import extracter.DataExtracterForJava;
-import extracter.ReadXMLFile;
+import extractXML.DIVElement;
+import extractXML.ReadXMLFile;
 
 import extracter.Employee;
 
@@ -28,11 +29,33 @@ public class DocGenerator {
 			File fxml = new File(fileaddress);
 			
 			ReadXMLFile rd = new ReadXMLFile();
-			rd.extractEmp(fxml);
+			//rd.extractEmp(fxml);
+			//rd.extractDIVs(fxml);
 			
-			List<Employee> empList = rd.getEmpList();
+			List<DIVElement> eList = rd.getDIVs();
 			
 			
+			
+			DataExtracterForJava dx = new DataExtracterForJava();
+			dx.extractData(eList.get(0));
+			
+			dx.createData();
+			
+			String payLoad = dx.getData();
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			//List<Employee> empList = rd.getEmpList();
+			
+			
+			
+			/**
 			for(Employee e : empList){
 				DataExtracterForJava dx = new DataExtracterForJava();
 				dx.extractData(e);
@@ -69,7 +92,7 @@ public class DocGenerator {
 				System.out.println("String locater and content combiner working....");
 				
 				
-			}
+			}*/
 			
 			
 		}catch(Exception e){

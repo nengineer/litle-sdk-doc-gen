@@ -75,9 +75,7 @@ public class FileLocater {
 			    if (temp.isDirectory()) {
 				search(temp);
 			    } else {
-			    	
-			    	 
-			    	if (getFileNameToSearch().equals(temp.getName())) {	
+			    	if (temp.getName().toLowerCase().contains(getFileNameToSearch().toLowerCase())){
 			    		//System.out.println("found match!!!");
 			    		result.add(temp.getAbsoluteFile().toString());
 			    	}else{
