@@ -57,16 +57,23 @@ public class DIVElement {
 	}
 
 	
-	
+	/**
+	 * process the whole block of XML element
+	 * @param div
+	 */
 	public void processDIV(Element div){
 		this.extractItemName(div);
 		System.out.println("Item Name: " + this.eleName);
-		this.findParentElement(div);
+		this.extractSubHeaderElement(div);
 		for(String s: parentElements){
 			System.out.println("Parent Element: "+s);
 		}
 	}
 	
+	/**
+	 * extract the name of the XML element
+	 * @param div
+	 */
 	public void extractItemName(Element div){
 		NodeList nodes = div.getElementsByTagName(XMLLookUpStrings.H1_HEAD1);  
 		for(int i=0; i< nodes.getLength(); i++){
@@ -80,35 +87,41 @@ public class DIVElement {
 		}
 	}
 	
-	public void findParentElement(Element div){
+	/**
+	 * extract subheader elements including parentElements, childElements, and attributes
+	 * @param div
+	 */
+	public void extractSubHeaderElement(Element div){
 		NodeList nodes = div.getElementsByTagName(XMLLookUpStrings.SH1_SUBHEAD1);
 		for (int i=0; i < nodes.getLength(); i++){
 			Node node = nodes.item(i);
-			if(trimString(node.getTextContent()).equals(XMLLookUpStrings.PARENTELEMENTS)){
-				Node sibling = node.getNextSibling();
-				while(sibling != null) {
-				    if ( sibling.getNodeType() == Node.ELEMENT_NODE ) {
-				    	Element parentE = (Element)sibling;
-				    	extractParentElement(parentE);
-				    	break;
-				    }
-
-				    sibling = sibling.getNextSibling();
-				}
-
+			String nodeContent = trimString(node.getTextContent());
+			if(nodeContent.equals(XMLLookUpStrings.PARENTELEMENTS)){
+				extractParentElement(node);
 			}
 		}
 	}
 	
-	public void extractParentElement(Element pe){
-		NodeList nodes = pe.getElementsByTagName(XMLLookUpStrings.COLOR);
-		for (int i=0; i<nodes.getLength(); i++){
-			Node node = nodes.item(i);
-			String itemName = trimString(node.getTextContent());
-			if(itemName != ""){
-				this.addEleToParentElements(itemName);
-			}
+	
+	public void extractParentElement(Node node){
+		Node sibling = node.getNextSibling();
+		while(sibling != null) {
+		    if ( sibling.getNodeType() == Node.ELEMENT_NODE ) {
+		    	Element pe = (Element)sibling;
+				NodeList parents = pe.getElementsByTagName(XMLLookUpStrings.COLOR);
+				for (int i=0; i<parents.getLength(); i++){
+					Node parent = parents.item(i);
+					String parentName = trimString(parent.getTextContent());
+					if(parentName != ""){
+						this.addEleToParentElements(parentName);
+					}
+				}
+		    	break;
+		    }
+
+		    sibling = sibling.getNextSibling();
 		}
+
 	}
 	
 	private String trimString(String raw){
