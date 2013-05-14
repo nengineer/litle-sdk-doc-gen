@@ -38,7 +38,7 @@ public class ReadXMLFile {
  
     try {
  
-	File fXmlFile = new File("/usr/local/litle-home/vchouhan/Desktop/XML_Ref_elements.xml");
+	File fXmlFile = new File("/usr/local/litle-home/zhe/parsePDF/xml_XML_Ref_elements.xml");
 	
 	DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 	DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();

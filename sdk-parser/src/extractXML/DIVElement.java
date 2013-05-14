@@ -61,7 +61,7 @@ public class DIVElement {
 	public void processDIV(Element div){
 		this.extractItemName(div);
 		System.out.println("Item Name: " + this.eleName);
-		this.extractParentElement(div);
+		this.findParentElement(div);
 		for(String s: parentElements){
 			System.out.println("Parent Element: "+s);
 		}
@@ -72,7 +72,7 @@ public class DIVElement {
 		for(int i=0; i< nodes.getLength(); i++){
 				Node eleA = nodes.item(i);
 				if(eleA.getNodeType() == Node.ELEMENT_NODE){
-					String itemName = eleA.getTextContent().replaceAll("\\s","");
+					String itemName = trimString(eleA.getTextContent());
 					if(itemName != ""){
 						this.setEleName(itemName);
 					}
@@ -84,13 +84,18 @@ public class DIVElement {
 		NodeList nodes = div.getElementsByTagName(XMLLookUpStrings.SH1_SUBHEAD1);
 		for (int i=0; i < nodes.getLength(); i++){
 			Node node = nodes.item(i);
-			if(node.getTextContent().equals(XMLLookUpStrings.PARENTELEMENTS)){
-				Node nextsib = node.getNextSibling();
-				if(nextsib.getNodeType() == Node.ELEMENT_NODE){
-					Element parentElement = (Element) nextsib;
-					extractParentElement(parentElement);
+			if(trimString(node.getTextContent()).equals(XMLLookUpStrings.PARENTELEMENTS)){
+				Node sibling = node.getNextSibling();
+				while(sibling != null) {
+				    if ( sibling.getNodeType() == Node.ELEMENT_NODE ) {
+				    	Element parentE = (Element)sibling;
+				    	extractParentElement(parentE);
+				    	break;
+				    }
+
+				    sibling = sibling.getNextSibling();
 				}
-			
+
 			}
 		}
 	}
@@ -99,11 +104,15 @@ public class DIVElement {
 		NodeList nodes = pe.getElementsByTagName(XMLLookUpStrings.COLOR);
 		for (int i=0; i<nodes.getLength(); i++){
 			Node node = nodes.item(i);
-			String itemName = node.getTextContent().replaceAll("\\s","");
+			String itemName = trimString(node.getTextContent());
 			if(itemName != ""){
 				this.addEleToParentElements(itemName);
 			}
 		}
+	}
+	
+	private String trimString(String raw){
+		return raw.replaceAll("\\s","");
 	}
 
 	
