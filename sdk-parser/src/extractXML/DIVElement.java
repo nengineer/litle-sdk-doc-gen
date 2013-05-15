@@ -18,6 +18,7 @@ public class DIVElement {
 	private HashMap<String, String> attrs;
 	private ArrayList<String> parentElements;
 	private HashMap<String, String> childElements;
+	private ArrayList<String> notes; //the notes before the examples
 
 	// private ArrayList<Attribute> attributes;
 
@@ -27,6 +28,7 @@ public class DIVElement {
 		this.attrs = new HashMap<String, String>();
 		this.parentElements = new ArrayList<String>();
 		this.childElements = new HashMap<String, String>();
+		this.setNotes(new ArrayList<String>());
 	}
 
 	public String getEleName() {
@@ -95,6 +97,18 @@ public class DIVElement {
 		this.attrs = attrs;
 	}
 
+	public ArrayList<String> getNotes() {
+		return notes;
+	}
+
+	public void setNotes(ArrayList<String> notes) {
+		this.notes = notes;
+	}
+	
+	public void addEleToNotes(String e) {
+		this.notes.add(e);
+	}
+
 	/**
 	 * process the whole block of XML element
 	 * 
@@ -108,6 +122,10 @@ public class DIVElement {
 			System.out.println("Key Attributes: " + i.getKey() + ", "
 					+ i.getValue());
 		}
+		this.extractNotesOptional(div);
+		for (String s : notes) {
+		System.out.println("Note: " + s);
+	}
 		this.extractSubHeaderElement(div);
 		for (String s : parentElements) {
 			System.out.println("Parent Element: " + s);
@@ -146,7 +164,7 @@ public class DIVElement {
 		while (sibling != null ) {
 			if (sibling.getNodeType() == Node.ELEMENT_NODE) {
 				Element se = (Element) sibling;
-				if(se.getTagName().equals(XMLLookUpStrings.BP_BODY1) && !stopForDescrip(se.getTextContent())){
+				if(se.getTagName().equals(XMLLookUpStrings.BP_BODY) && !stopForDescrip(se.getTextContent())){
 					String s1 = trimNewLine(se.getTextContent());
 					appendDescrip(s1);
 				}
@@ -156,15 +174,19 @@ public class DIVElement {
 			}
 			sibling = sibling.getNextSibling();
 		}
-		extractTypeOptional(sibling);
+		extractAttrsOptional(sibling);
 
 	}
 
-	public void extractTypeOptional(Node sibling) {
+	/**
+	 * extract the general attributes like type, maxLength, and minLength (optional)
+	 * @param sibling
+	 */
+	public void extractAttrsOptional(Node sibling) {
 		while (sibling != null) {
 			if (sibling.getNodeType() == Node.ELEMENT_NODE) {
 				Element se = (Element) sibling;
-				if(se.getTagName().equals(XMLLookUpStrings.BP_BODY1)){
+				if(se.getTagName().equals(XMLLookUpStrings.BP_BODY)){
 					String s1 = trimNewLine(se.getTextContent());
 					formatTypes(s1);
 					
@@ -172,6 +194,33 @@ public class DIVElement {
 				break;
 			}
 			sibling = sibling.getNextSibling();
+		}
+	}
+	
+	/**
+	 * extract the notes that are not among the code (optional)
+	 * @param div
+	 */
+	public void extractNotesOptional(Element div){
+		NodeList nodes = div.getElementsByTagName(XMLLookUpStrings.NOTEBODY);
+		for (int i = 0; i < nodes.getLength(); i++) {
+			Node note = nodes.item(i);
+			Node GGparent = note.getParentNode().getParentNode().getParentNode(); //first cell, then row, then table
+			Node sibling = GGparent.getPreviousSibling();
+			boolean codeNote = false;
+			while (sibling != null ) {
+				if (sibling.getNodeType() == Node.ELEMENT_NODE) {
+					Element se = (Element) sibling;
+					if(se.getTagName().equals(XMLLookUpStrings.CODE_EX) ){
+						codeNote = true;
+						break;
+					}
+				}
+				sibling = sibling.getPreviousSibling();
+			}
+			if(!codeNote){
+				addEleToNotes(trimNewLine(note.getTextContent()));
+			}
 		}
 	}
 
