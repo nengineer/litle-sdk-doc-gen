@@ -29,7 +29,7 @@ public class ReadXMLFile {
 					Element e = (Element) node;
 					DIVElement div = new DIVElement();
 					div.processDIV(e);
-					//DIVlist.add(div);
+					DIVlist.add(div);
 				}
 
 			}
