@@ -60,10 +60,7 @@ public class DocGenerator {
 				if(fileAdd.contains(".java")){
 					StringLocaterForJava sl = new StringLocaterForJava(fileAdd);
 					sl.findLocations(first.getEleName().toLowerCase());
-					for(int location : sl.getLocations()){
-						ContentCombiner cc = new ContentCombiner(location);
-						cc.combine(new File(fileAdd), payLoad);	
-					}					
+					new ContentCombiner(sl.getLocations()).combine(new File(fileAdd), payLoad);
 				}		
 			}	
 		}catch(Exception e){

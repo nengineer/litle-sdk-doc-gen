@@ -13,12 +13,13 @@ import java.util.List;
 
 public class ContentCombiner {
 
-	int lineNum;
+	List<Integer> locations = new ArrayList<Integer>();
 	List<String> dataList; 
 	
 	
-	public ContentCombiner(int ln){
-		this.lineNum = (ln-1);
+	public ContentCombiner(List<Integer> loclist){
+			
+		this.locations = loclist;
 		this.dataList =new ArrayList<String>();
 	}
 	
@@ -38,7 +39,14 @@ public class ContentCombiner {
     			file.createNewFile();
     		}
     		
-    		new ContentCombiner(2).combine(file, data1);
+    		List<Integer> tl = new ArrayList<Integer>();
+    		
+    		tl.add(5);
+    		tl.add(10);
+    		
+    		new ContentCombiner(tl).combine(file, data1);
+    		
+    		//new ContentCombiner(7).combine(file, data1); 
     
     	}catch(IOException e){
     		e.printStackTrace();
@@ -51,6 +59,7 @@ public class ContentCombiner {
     	try{
     		ContentCombiner cc = this;
 			cc.storeContent(file);
+			cc.processContent();
 			cc.appendContentAt(file,data);  		
 			cc.showContent(file);
     	}catch(Exception e){
@@ -86,18 +95,13 @@ public class ContentCombiner {
         	
         	FileWriter filewriter = new FileWriter(file);
     	    BufferedWriter bufferwriter = new BufferedWriter(filewriter);
-        	while(count < cc.getLineNum() && cc.getLineNum() < cc.getDataList().size()){
-        		bufferwriter.write(cc.getDataList().get(count)+ "\n");
-        		count++;
-        	}
-        	
-        	String payload = cc.insertMargin(data,cc.getMargin(cc.getDataList().get(count)));
-        	
-        	bufferwriter.write(payload+ "\n");
-        	
         	while(count < cc.getDataList().size()){
         		bufferwriter.write(cc.getDataList().get(count)+ "\n");
         		count++;
+        		if(cc.getLocations().contains(count+1)){
+                	String payload = cc.insertMargin(data,cc.getMargin(cc.getDataList().get(count)));
+                	bufferwriter.write(payload+ "\n");
+        		}
         	}
         	bufferwriter.close();
     	}catch(Exception e){
@@ -106,7 +110,13 @@ public class ContentCombiner {
 
     }
     
-    public void showContent(File file) {
+    public List<Integer> getLocations() {
+		// TODO Auto-generated method stub
+		return locations;
+	}
+
+
+	public void showContent(File file) {
     	try{
     		FileReader filereader = new FileReader(file);
     		BufferedReader reader = new BufferedReader(filereader);
@@ -147,10 +157,47 @@ public class ContentCombiner {
     	return result;
     }
     
-    public int getLineNum(){
-    	return this.lineNum;
+    public void processContent(){
+    	ContentCombiner cc = this;
+    	for(int location : cc.getLocations()){
+    		cc.removeLastComments(location);
+    	}
     }
     
+	public void removeLastComments(int last){
+		List<String> stlist = this.getDataList();
+		if(this.getDataList().get(last-1).trim().isEmpty()){
+			last--;
+			removeLastComments(last);
+		}else if(this.getDataList().get(last-1).trim().endsWith("*/")){
+			int j = last;
+			while(!this.getDataList().get(j-1).trim().startsWith("/*")){
+				this.getDataList().remove(j-1);
+				for(int location : this.locations){
+					if((location-1)>= j){
+						System.out.println("old location modified" + location + "modified");
+						location--;
+						System.out.println("new location is : " + location);
+					}
+					
+					System.out.println("old location unmodified");
+				}
+				j--;
+			}
+			stlist.remove(j-1);
+			for(int location : locations){
+				if((location-1)>= j){
+					location--;
+				}
+			}
+			return;
+		}else{
+			return;
+		}
+	}
+    
+    
+        
     public List<String> getDataList(){
     	return this.dataList;
     }
