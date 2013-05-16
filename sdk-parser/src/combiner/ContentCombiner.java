@@ -38,7 +38,7 @@ public class ContentCombiner {
     			file.createNewFile();
     		}
     		
-    		new ContentCombiner(7).combine(file, data1);
+    		new ContentCombiner(2).combine(file, data1);
     
     	}catch(IOException e){
     		e.printStackTrace();
@@ -91,7 +91,9 @@ public class ContentCombiner {
         		count++;
         	}
         	
-        	bufferwriter.write(data+ "\n");
+        	String payload = cc.insertMargin(data,cc.getMargin(cc.getDataList().get(count)));
+        	
+        	bufferwriter.write(payload+ "\n");
         	
         	while(count < cc.getDataList().size()){
         		bufferwriter.write(cc.getDataList().get(count)+ "\n");
@@ -118,6 +120,31 @@ public class ContentCombiner {
     		e.printStackTrace();
     	}
 
+    }
+    
+    
+    public String getMargin(String st){
+    	String result = "";
+    	for(int i =0 ;i < st.length();i++){
+    		if(!(st.charAt(i) == '\t' || st.charAt(i) == ' ')){
+    			return result;
+    		}
+    		result = result + st.charAt(i);
+		}
+		return result;
+    }
+    
+    public String insertMargin(String payLoad, String margin){
+    	String[] loadparts = payLoad.split("\n");
+    	String result = "";
+    	for(int i = 0;i<loadparts.length;i++){
+    		if(i==0){
+    			result = result + margin + loadparts[i];
+    		}else{
+    			result = result + "\n" + margin + loadparts[i];
+    		}
+    	}
+    	return result;
     }
     
     public int getLineNum(){
