@@ -15,7 +15,7 @@ public class ReadXMLFile {
 	
 	private ArrayList<DIVElement> DIVlist = new ArrayList<DIVElement>();
 	
-	ReadXMLFile(){
+	public ReadXMLFile(){
 		
 	};
 	
