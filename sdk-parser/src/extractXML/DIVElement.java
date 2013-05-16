@@ -17,6 +17,7 @@ public class DIVElement {
 	private String descrip;
 	private HashMap<String, String> attrs;
 	private ArrayList<String> parentElements;
+	private ArrayList<Attribute> subElements;
 	private HashMap<String, String> childElements;
 	private ArrayList<String> notes; //the notes before the examples
 
@@ -27,6 +28,7 @@ public class DIVElement {
 		this.descrip = "";
 		this.attrs = new HashMap<String, String>();
 		this.parentElements = new ArrayList<String>();
+		this.subElements = new ArrayList<Attribute>();
 		this.childElements = new HashMap<String, String>();
 		this.setNotes(new ArrayList<String>());
 	}
@@ -57,6 +59,18 @@ public class DIVElement {
 
 	public void addEleToParentElements(String e) {
 		this.parentElements.add(e);
+	}
+
+	public ArrayList<Attribute> getSubElements() {
+		return subElements;
+	}
+
+	public void setSubElements(ArrayList<Attribute> subElements) {
+		this.subElements = subElements;
+	}
+	
+	public void addEleToSubElements(Attribute e) {
+		this.subElements.add(e);
 	}
 
 	public HashMap<String, String> getChildElements() {
@@ -116,24 +130,27 @@ public class DIVElement {
 	 */
 	public void processDIV(Element div) {
 		this.extractItemName(div);
-		System.out.println("Item Name: " + this.eleName);
-		System.out.println("Description: " + this.descrip);
-		for (Entry<String, String> i : attrs.entrySet()) {
-			System.out.println("Key Attributes: " + i.getKey() + ", "
-					+ i.getValue());
-		}
+//		System.out.println("Item Name: " + this.eleName);
+//		System.out.println("Description: " + this.descrip);
+//		for (Entry<String, String> i : attrs.entrySet()) {
+//			System.out.println("Key Attributes: " + i.getKey() + ", "
+//					+ i.getValue());
+//		}
 		this.extractNotesOptional(div);
-		for (String s : notes) {
-		System.out.println("Note: " + s);
-	}
+//		for (String s : notes) {
+//		System.out.println("Note: " + s);
+//		}
 		this.extractSubHeaderElement(div);
-		for (String s : parentElements) {
-			System.out.println("Parent Element: " + s);
-		}
-		for (Entry<String, String> i : childElements.entrySet()) {
-			System.out.println("Child Element: " + i.getKey() + ", "
-					+ i.getValue());
-		}
+//		for (String s : parentElements) {
+//			System.out.println("Parent Element: " + s);
+//		}
+//		for (Attribute a: subElements){
+//			System.out.println(a.toString());
+//		}
+//		for (Entry<String, String> i : childElements.entrySet()) {
+//			System.out.println("Child Element: " + i.getKey() + ", "
+//					+ i.getValue());
+//		}
 	}
 
 	/**
@@ -239,6 +256,9 @@ public class DIVElement {
 			if (nodeContent.equals(XMLLookUpStrings.PARENTELEMENTS)) {
 				extractParentElements(node);
 			}
+			if (nodeContent.equals(XMLLookUpStrings.SUBELEMENTS)) {
+				extractSubElements(node);
+			}
 			if (nodeContent.equals(XMLLookUpStrings.CHILDELEMENTS)) {
 				extractChildElements(node);
 			}
@@ -267,6 +287,81 @@ public class DIVElement {
 			}
 			
 			sibling = sibling.getNextSibling();
+		}
+	}
+	
+	/**
+	 * extract the attributes from the Attributes table
+	 * @param node
+	 */
+	public void extractSubElements(Node node){
+		Node sibling = node.getNextSibling();
+		int index = 0;
+		while (sibling != null) {
+			if (sibling.getNodeType() == Node.ELEMENT_NODE) {
+				Element pe = (Element) sibling;
+				if(index == 0 && pe.getTagName().equals(XMLLookUpStrings.ANCHOR)){
+					index ++;
+				}
+				else if(index == 1 && pe.getTagName().equals(XMLLookUpStrings.TABLE)){
+					NodeList tbs = pe.getElementsByTagName(XMLLookUpStrings.ROW);
+					for (int i = 1; i < tbs.getLength(); i++){ //skip the first set as they are headlines
+						processSubElementsRow(tbs.item(i));
+					}
+					break;
+				}
+				else{
+					return;
+				}
+			}
+			sibling = sibling.getNextSibling();
+		}
+	}
+	
+	public void processSubElementsRow(Node node){
+		if(node.getNodeType() == Node.ELEMENT_NODE){
+			Element e = (Element) node;
+			NodeList tbs = e.getElementsByTagName(XMLLookUpStrings.TABLE_BODY);
+			Attribute a = new Attribute();
+			if(tbs.getLength()>=4){
+				a.setName(trimNewLine(tbs.item(0).getTextContent()));
+				a.setType(trimNewLine(tbs.item(1).getTextContent()));
+				a.setRequired(trimNewLine(tbs.item(2).getTextContent()).equals("Yes")? true: false);
+				a.setDescription(trimNewLine(tbs.item(3).getTextContent()));
+			}
+			for(int i=4; i<tbs.getLength(); i++){
+				processSubElementsMinLength(a, trimNewLine(tbs.item(i).getTextContent()));
+				processSubElementsMaxLength(a, trimNewLine(tbs.item(i).getTextContent()));
+				processSubElementsTotalDigits(a, trimNewLine(tbs.item(i).getTextContent()));
+			}
+			addEleToSubElements(a);
+		}
+	}
+	
+	public void processSubElementsMinLength(Attribute a, String raw){
+		Pattern p = Pattern.compile("minLength = (.*)(\\t|)");
+		Matcher m = p.matcher(raw);
+		if(m.find()){
+			a.setMinLength(m.group(1));
+			//System.out.println(m.group(1));
+		}
+	}
+	
+	public void processSubElementsMaxLength(Attribute a, String raw){
+		Pattern p = Pattern.compile("maxLength = (.*)(\\t|)");
+		Matcher m = p.matcher(raw);
+		if(m.find()){
+			a.setMaxLength(m.group(1));
+			//System.out.println(m.group(1));
+		}
+	}
+	
+	public void processSubElementsTotalDigits(Attribute a, String raw){
+		Pattern p = Pattern.compile("totalDigits = (.*)(\\t|)");
+		Matcher m = p.matcher(raw);
+		if(m.find()){
+			a.setTotalDigits(m.group(1));
+			System.out.println(m.group(1));
 		}
 	}
 
@@ -300,6 +395,7 @@ public class DIVElement {
 			sibling = sibling.getNextSibling();
 		}
 	}
+	
 
 	
 	private String formatChildElementsOption(String s) {

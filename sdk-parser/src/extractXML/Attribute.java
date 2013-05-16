@@ -8,8 +8,19 @@ public class Attribute {
 	private String description;
 	private String minLength;
 	private String maxLength;
+	private String totalDigits;
+	private String validValues;
 	
-	public Attribute(){}
+	public Attribute(){
+		name = "";
+		type = "";
+		required = false;
+		description = "";
+		minLength = "";
+		maxLength = "";
+		totalDigits = "";
+		validValues = "";
+	}
 
 	public String getName() {
 		return name;
@@ -58,7 +69,30 @@ public class Attribute {
 	public void setMaxLength(String maxLength) {
 		this.maxLength = maxLength;
 	}
+
+	public String getTotalDigits() {
+		return totalDigits;
+	}
+
+	public void setTotalDigits(String totalDigits) {
+		this.totalDigits = totalDigits;
+	}
+
+	public String getValidValues() {
+		return validValues;
+	}
+
+	public void setValidValues(String validValues) {
+		this.validValues = validValues;
+	}
 	
+	@Override
+	public String toString() {
+		return "Attribute [name=" + name + ", type=" + type + ", required="
+				+ required + ", description=" + description + ", minLength="
+				+ minLength + ", maxLength=" + maxLength + ", totalDigits="
+				+ totalDigits + ", validValues=" + validValues + "]";
+	}
 	
 
 }
