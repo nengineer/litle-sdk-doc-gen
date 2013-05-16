@@ -52,7 +52,7 @@ public class ContentCombiner {
     		ContentCombiner cc = this;
 			cc.storeContent(file);
 			cc.appendContentAt(file,data);  		
-		//	cc.showContent(file);
+			cc.showContent(file);
     	}catch(Exception e){
     		e.printStackTrace();
     	} 

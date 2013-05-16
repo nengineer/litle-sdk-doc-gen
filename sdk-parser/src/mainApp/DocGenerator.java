@@ -3,6 +3,11 @@ package mainApp;
 import java.io.File;
 import java.util.List;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+
 import combiner.ContentCombiner;
 
 import Locaters.FileLocater;
@@ -18,83 +23,49 @@ import extracter.Employee;
 public class DocGenerator {
 
 	public static void main(String[] args){
-		new DocGenerator().run("/usr/local/litle-home/vchouhan/Desktop/testarena/staff.xml","/usr/local/litle-home/vchouhan/Desktop/testarena");
+		new DocGenerator().run("/usr/local/litle-home/vchouhan/Desktop/XML_Ref_elements.xml","/usr/local/litle-home/vchouhan/Desktop/testarena");
 	}
-	
-	
 	
 	public void run(String fileaddress, String dirAddress){
 		
 		try{
-			File fxml = new File(fileaddress);
+			File fXmlFile = new File(fileaddress);
 			
+			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+			Document doc = dBuilder.parse(fXmlFile);
+			doc.getDocumentElement().normalize();
 			ReadXMLFile rd = new ReadXMLFile();
-			//rd.extractEmp(fxml);
-			//rd.extractDIVs(fxml);
+			rd.extractDIVs(doc);
 			
+			
+			// got element list extracted from xml file
 			List<DIVElement> eList = rd.getDIVs();
 			
+			DIVElement first  = new DIVElement();
 			
+			first = eList.get(0);
 			
+			// data extracted from DIV element
 			DataExtracterForJava dx = new DataExtracterForJava();
-			dx.extractData(eList.get(0));
-			
+			dx.extractData(first);
 			dx.createData();
-			
 			String payLoad = dx.getData();
 			
-			
-			
-			
-			
-			
-			
-			
-			
-			//List<Employee> empList = rd.getEmpList();
-			
-			
-			
-			/**
-			for(Employee e : empList){
-				DataExtracterForJava dx = new DataExtracterForJava();
-				dx.extractData(e);
-				dx.createData();
-				String payLoad = dx.getData();
-				
-				System.out.println("data extracter working....");
-				
-				
+			// finding parent and appending commments now
+			for(String parent : first.getParentElements()){
 				FileLocater fl = new FileLocater();
-				fl.locate(e.getNickName() + ".java", dirAddress);
-				
-				System.out.println("file locater working....");
-				
-				
-				List<String> files = fl.getResult();
-				
-				
-				for(String f : files){
-					System.out.println(f);
-				}
-				
-				for(String f : files){
-					StringLocaterForJava sl = new StringLocaterForJava(f);
-					sl.findLocations("setname;");
-					List<Integer> locations = sl.getLocations();
-					
-					for(int l : locations){
-						new ContentCombiner(l).combine(new File(f), payLoad);
-					}
-
-				}
-				
-				System.out.println("String locater and content combiner working....");
-				
-				
-			}*/
-			
-			
+				fl.locate(parent, dirAddress);
+				String fileAdd = fl.getResult();
+				if(fileAdd.contains(".java")){
+					StringLocaterForJava sl = new StringLocaterForJava(fileAdd);
+					sl.findLocations(first.getEleName().toLowerCase());
+					for(int location : sl.getLocations()){
+						ContentCombiner cc = new ContentCombiner(location);
+						cc.combine(new File(fileAdd), payLoad);	
+					}					
+				}		
+			}	
 		}catch(Exception e){
 			e.printStackTrace();
 		}
