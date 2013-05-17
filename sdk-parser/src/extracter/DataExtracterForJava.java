@@ -23,28 +23,17 @@ public class DataExtracterForJava implements DataExtracter{
 		
 		List<String> plist = new ArrayList<String>();
 		
+		plist = div.getParentElements();
+		
 		for(String p : plist){
 			dx.getDList().add("@see " + p);
 		}
 		
-		// add further description here
+		dx.getDList().add("Demo to Zhen ");
+		dx.getDList().add("@version : not added");
+		dx.getDList().add("Demo for Greg");
 		
-		
-		/**
-		dx.getDList().add("Employee Id is : " + String.valueOf(e.getId()));
-		
-		dx.getDList().add("Employee first name is : " + e.getFirstName());
-		
-		dx.getDList().add("Employee last name is : " + e.getLastName());
-		
-		dx.getDList().add("Employee nick name is : " + e.getNickName());
-		
-		dx.getDList().add(String.valueOf("Employee salary is : " + e.getSalary()));
-		
-		
-		*/
-
-		
+		// add further description here		
 	}
 
 	@Override
@@ -52,15 +41,11 @@ public class DataExtracterForJava implements DataExtracter{
 		// TODO Auto-generated method stub
 		
 		DataExtracterForJava dx = this;
-		
-		dx.setData("/**" + "\n");
-		
+		dx.setData("/*" + "\n");
 		for(String s : dx.getDList()){
-			
-			dx.setData(dx.getData() + "  * " + s + "\n");
-		}
-		
-		dx.setData(dx.getData() + "  **/");
+			dx.setData(dx.getData() + " * " + s + "\n");
+		}		
+		dx.setData(dx.getData() + " */");
 	}
 	
 	public void setData(String d){

@@ -15,12 +15,14 @@ public class ContentCombiner {
 
 	List<Integer> locations = new ArrayList<Integer>();
 	List<String> dataList; 
+	List<Integer> flaggedlocations;
 	
 	
 	public ContentCombiner(List<Integer> loclist){
 			
 		this.locations = loclist;
 		this.dataList =new ArrayList<String>();
+		this.flaggedlocations = new ArrayList<Integer>();
 	}
 	
 	
@@ -61,7 +63,7 @@ public class ContentCombiner {
 			cc.storeContent(file);
 			cc.processContent();
 			cc.appendContentAt(file,data);  		
-			cc.showContent(file);
+			//cc.showContent(file);
     	}catch(Exception e){
     		e.printStackTrace();
     	} 
@@ -96,8 +98,12 @@ public class ContentCombiner {
         	FileWriter filewriter = new FileWriter(file);
     	    BufferedWriter bufferwriter = new BufferedWriter(filewriter);
         	while(count < cc.getDataList().size()){
-        		bufferwriter.write(cc.getDataList().get(count)+ "\n");
-        		count++;
+        		if(cc.getFlaggedLocations().contains(count)){
+        			count++;
+        		}else{
+               		bufferwriter.write(cc.getDataList().get(count)+ "\n");
+            		count++;
+        		}
         		if(cc.getLocations().contains(count+1)){
                 	String payload = cc.insertMargin(data,cc.getMargin(cc.getDataList().get(count)));
                 	bufferwriter.write(payload+ "\n");
@@ -158,48 +164,35 @@ public class ContentCombiner {
     }
     
     public void processContent(){
-    	ContentCombiner cc = this;
-    	for(int location : cc.getLocations()){
-    		cc.removeLastComments(location);
+    	for(int location : getLocations()){
+    		markLines(location-1);
     	}
     }
     
-	public void removeLastComments(int last){
-		List<String> stlist = this.getDataList();
-		if(this.getDataList().get(last-1).trim().isEmpty()){
-			last--;
-			removeLastComments(last);
-		}else if(this.getDataList().get(last-1).trim().endsWith("*/")){
-			int j = last;
-			while(!this.getDataList().get(j-1).trim().startsWith("/*")){
-				this.getDataList().remove(j-1);
-				for(int location : this.locations){
-					if((location-1)>= j){
-						System.out.println("old location modified" + location + "modified");
-						location--;
-						System.out.println("new location is : " + location);
-					}
-					
-					System.out.println("old location unmodified");
-				}
-				j--;
+	public void markLines(int location){
+		
+		List<String> dlist = this.getDataList();
+		int i = location-1;		
+		while(dlist.get(i).trim().isEmpty()){
+			i--;
+		}
+		if(dlist.get(i).trim().endsWith("*/")){
+			while(!dlist.get(i).trim().contains("/*")){
+				getFlaggedLocations().add(i);
+				i--;
 			}
-			stlist.remove(j-1);
-			for(int location : locations){
-				if((location-1)>= j){
-					location--;
-				}
-			}
-			return;
-		}else{
-			return;
+			getFlaggedLocations().add(i);
 		}
 	}
-    
+	
     
         
     public List<String> getDataList(){
     	return this.dataList;
+    }
+    
+    public List<Integer> getFlaggedLocations(){
+    	return this.flaggedlocations;
     }
     
 }

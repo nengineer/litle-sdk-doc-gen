@@ -23,7 +23,7 @@ import extracter.Employee;
 public class DocGenerator {
 
 	public static void main(String[] args){
-		new DocGenerator().run("/usr/local/litle-home/vchouhan/Desktop/XML_Ref_elements.xml","/usr/local/litle-home/vchouhan/Desktop/testarena");
+		new DocGenerator().run("/usr/local/litle-home/vchouhan/Desktop/XML_Ref_elements.xml","/usr/local/litle-home/vchouhan/Desktop/MySpace/testonme");
 	}
 	
 	public void run(String fileaddress, String dirAddress){
@@ -56,12 +56,18 @@ public class DocGenerator {
 			for(String parent : first.getParentElements()){
 				FileLocater fl = new FileLocater();
 				fl.locate(parent, dirAddress);
-				String fileAdd = fl.getResult();
-				if(fileAdd.contains(".java")){
-					StringLocaterForJava sl = new StringLocaterForJava(fileAdd);
-					sl.findLocations(first.getEleName().toLowerCase());
-					new ContentCombiner(sl.getLocations()).combine(new File(fileAdd), payLoad);
-				}		
+				if(!(fl.getResult() == null)){	
+					for(String fileAdd : fl.getResult()){
+						if(fileAdd.contains(".java")){
+							StringLocaterForJava sl = new StringLocaterForJava(fileAdd);
+							sl.findLocations(first.getEleName().toLowerCase());
+							if(!sl.getLocations().isEmpty()){
+								System.out.println("updated comments at : " + sl.getLocations().size() + "for file : " + fileAdd);
+								new ContentCombiner(sl.getLocations()).combine(new File(fileAdd), payLoad);
+							}
+						}
+					}	
+				}	
 			}	
 		}catch(Exception e){
 			e.printStackTrace();
