@@ -17,6 +17,7 @@ public class XMLLookUpStrings {
 	final static String PARENTELEMENTS = "ParentElements:";
 	final static String SUBELEMENTS = "Attributes:";
 	final static String CHILDELEMENTS = "ChildElements:";
+	final static String ENUMERATIONS = "Enumerations:";
 	final static String COLOR = "Color";
 	
 

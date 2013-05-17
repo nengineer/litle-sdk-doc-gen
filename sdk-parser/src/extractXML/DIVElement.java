@@ -22,6 +22,7 @@ public class DIVElement {
 	private ArrayList<String> parentElements;
 	private ArrayList<Attribute> subElements;
 	private HashMap<String, String> childElements;
+	private HashMap<String, String> enumerations;
 	private ArrayList<String> notes; //the notes before the examples
 
 	// private ArrayList<Attribute> attributes;
@@ -33,6 +34,7 @@ public class DIVElement {
 		this.parentElements = new ArrayList<String>();
 		this.subElements = new ArrayList<Attribute>();
 		this.childElements = new HashMap<String, String>();
+		this.enumerations = new HashMap<String, String>();
 		this.setNotes(new ArrayList<String>());
 	}
 
@@ -126,18 +128,24 @@ public class DIVElement {
 		this.notes.add(e);
 	}
 
+	public HashMap<String, String> getEnumerations() {
+		return enumerations;
+	}
+
+	public void setEnumerations(HashMap<String, String> enumerations) {
+		this.enumerations = enumerations;
+	}
+	
+	public void addEleToEnums(String key, String value) {
+		this.enumerations.put(key, value);
+	} 
+
 	/**
 	 * process the whole block of XML element
 	 * 
 	 * @param div
 	 */
 	public void processDIV(Element div, BufferedWriter out) {
-//		
-//		  FileWriter fstream = null;
-//		try {
-//			fstream = new FileWriter("/usr/local/litle-home/zhe/parsePDF/parsedOutput.txt");
-//
-//		BufferedWriter out = new BufferedWriter(fstream);
 		try {
 			out.write("========================================================================================\n");
 
@@ -149,7 +157,7 @@ public class DIVElement {
 		for (Entry<String, String> i : attrs.entrySet()) {
 //			System.out.println("Key Attributes: " + i.getKey() + ", "
 //					+ i.getValue());
-			out.write("Key Attributes: " + i.getKey() + ", "
+			out.write("Key Attributes: " + i.getKey() + "| "
 					+ i.getValue() + "\n");
 		}
 		this.extractNotesOptional(div);
@@ -171,10 +179,14 @@ public class DIVElement {
 		for (Entry<String, String> i : childElements.entrySet()) {
 //			System.out.println("Child Element: " + i.getKey() + ", "
 //					+ i.getValue());
-			out.write("Child Element: " + i.getKey() + ", "
+			out.write("Child Element: " + i.getKey() + "| "
 					+ i.getValue()+ "\n");
 		}
 		
+		for (Entry<String, String> i : enumerations.entrySet()) {
+			out.write("Enumeration: " + i.getKey() + "| "
+			+ i.getValue() + "\n");
+		}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -291,6 +303,9 @@ public class DIVElement {
 			if (nodeContent.equals(XMLLookUpStrings.CHILDELEMENTS)) {
 				extractChildElements(node);
 			}
+			if (nodeContent.equals(XMLLookUpStrings.ENUMERATIONS)) {
+				extractEnumerations(node);
+			}
 		}
 	}
 
@@ -352,6 +367,50 @@ public class DIVElement {
 			}
 			sibling = sibling.getNextSibling();
 		}
+	}
+	
+	public void extractEnumerations(Node node){
+		Node sibling = node.getNextSibling();
+		int index = 0;
+		while (sibling != null) {
+			if (sibling.getNodeType() == Node.ELEMENT_NODE) {
+				Element pe = (Element) sibling;
+				if(index == 0 && pe.getTagName().equals(XMLLookUpStrings.ANCHOR)){
+					index ++;
+				}
+				else if(index == 1 && pe.getTagName().equals(XMLLookUpStrings.TABLE)){
+					if(pe.getElementsByTagName(XMLLookUpStrings.TABLE_HEAD).getLength()!=0){
+						NodeList tbs = pe.getElementsByTagName(XMLLookUpStrings.ROW);
+						for (int i = 1; i < tbs.getLength(); i++){ //skip the first set as they are headlines
+							processEnumerationsRow(tbs.item(i));
+						}
+						break;
+					}
+				
+					else{  //if there is note right before the enumerations table, reset the index
+						index = 0; 
+					}
+
+				}
+				else{
+					return;
+				}
+			}
+			sibling = sibling.getNextSibling();
+		}
+	}
+	
+	public void processEnumerationsRow(Node node){
+		if(node.getNodeType() == Node.ELEMENT_NODE){
+			Element e = (Element) node;
+			NodeList tbs = e.getElementsByTagName(XMLLookUpStrings.TABLE_BODY);
+			if(tbs.getLength()==2){
+				String key = trimNewLine(tbs.item(0).getTextContent());
+				String value = trimNewLine(tbs.item(1).getTextContent());
+				addEleToEnums(key, value);
+			}
+		}
+		
 	}
 	
 	public void processSubElementsRow(Node node){
