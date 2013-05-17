@@ -9,6 +9,7 @@ public class XMLLookUpStrings {
 	final static String NOTEHEAD = "NH-NoteHead";
 	final static String NOTEBODY = "NB-NoteBody";
 	final static String TABLE = "TABLE";
+	final static String TABLE_HEAD = "TH-TblHead";
 	final static String TABLE_BODY = "TB-TblBody";
 	final static String ROW = "ROW";
 	final static String CODE_EX = "CE-CodeEx";

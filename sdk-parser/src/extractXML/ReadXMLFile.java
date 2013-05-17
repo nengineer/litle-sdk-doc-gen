@@ -1,6 +1,9 @@
 package extractXML;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -20,6 +23,12 @@ public class ReadXMLFile {
 	};
 	
 	public void extractDIVs(Document doc){
+
+		  FileWriter fstream = null;
+		try {
+			fstream = new FileWriter("/usr/local/litle-home/zhe/parsePDF/parsedOutput.txt");
+
+		BufferedWriter out = new BufferedWriter(fstream);
 		
 		if(doc != null){
 			NodeList nodes = doc.getElementsByTagName(XMLLookUpStrings.DIV);
@@ -28,12 +37,17 @@ public class ReadXMLFile {
 				if(node.getNodeType() == Node.ELEMENT_NODE){
 					Element e = (Element) node;
 					DIVElement div = new DIVElement();
-					div.processDIV(e);
+					div.processDIV(e, out);
 					DIVlist.add(div);
 				}
 
 			}
 		}
+		out.close();
+		} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
 		
 	}
 	

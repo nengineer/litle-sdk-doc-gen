@@ -1,4 +1,7 @@
 package extractXML;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -128,29 +131,55 @@ public class DIVElement {
 	 * 
 	 * @param div
 	 */
-	public void processDIV(Element div) {
+	public void processDIV(Element div, BufferedWriter out) {
+//		
+//		  FileWriter fstream = null;
+//		try {
+//			fstream = new FileWriter("/usr/local/litle-home/zhe/parsePDF/parsedOutput.txt");
+//
+//		BufferedWriter out = new BufferedWriter(fstream);
+		try {
+			out.write("========================================================================================\n");
+
 		this.extractItemName(div);
+		out.write("Item Name: "+ this.eleName + "\n");
+		out.write("Description: "+ this.descrip+ "\n");
 //		System.out.println("Item Name: " + this.eleName);
 //		System.out.println("Description: " + this.descrip);
-//		for (Entry<String, String> i : attrs.entrySet()) {
+		for (Entry<String, String> i : attrs.entrySet()) {
 //			System.out.println("Key Attributes: " + i.getKey() + ", "
 //					+ i.getValue());
-//		}
+			out.write("Key Attributes: " + i.getKey() + ", "
+					+ i.getValue() + "\n");
+		}
 		this.extractNotesOptional(div);
-//		for (String s : notes) {
+		for (String s : notes) {
 //		System.out.println("Note: " + s);
+			out.write("Note: " + s+ "\n");
 //		}
+		}
 		this.extractSubHeaderElement(div);
-//		for (String s : parentElements) {
+		for (String s : parentElements) {
 //			System.out.println("Parent Element: " + s);
+			out.write("Parent Element: " + s+ "\n");
 //		}
-//		for (Attribute a: subElements){
+		}
+		for (Attribute a: subElements){
 //			System.out.println(a.toString());
-//		}
-//		for (Entry<String, String> i : childElements.entrySet()) {
+			out.write(a.toString()+ "\n");
+		}
+		for (Entry<String, String> i : childElements.entrySet()) {
 //			System.out.println("Child Element: " + i.getKey() + ", "
 //					+ i.getValue());
-//		}
+			out.write("Child Element: " + i.getKey() + ", "
+					+ i.getValue()+ "\n");
+		}
+		
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	/**
@@ -304,11 +333,18 @@ public class DIVElement {
 					index ++;
 				}
 				else if(index == 1 && pe.getTagName().equals(XMLLookUpStrings.TABLE)){
-					NodeList tbs = pe.getElementsByTagName(XMLLookUpStrings.ROW);
-					for (int i = 1; i < tbs.getLength(); i++){ //skip the first set as they are headlines
-						processSubElementsRow(tbs.item(i));
+					if(pe.getElementsByTagName(XMLLookUpStrings.TABLE_HEAD).getLength()!=0){
+						NodeList tbs = pe.getElementsByTagName(XMLLookUpStrings.ROW);
+						for (int i = 1; i < tbs.getLength(); i++){ //skip the first set as they are headlines
+							processSubElementsRow(tbs.item(i));
+						}
+						break;
 					}
-					break;
+				
+					else{  //if there is note right before the attributes table, reset the index
+						index = 0; 
+					}
+
 				}
 				else{
 					return;
@@ -323,46 +359,91 @@ public class DIVElement {
 			Element e = (Element) node;
 			NodeList tbs = e.getElementsByTagName(XMLLookUpStrings.TABLE_BODY);
 			Attribute a = new Attribute();
+			boolean[] list = new boolean[tbs.getLength()];
+			for(int i=0; i<list.length; i++){
+				list[i] = true;
+			}
 			if(tbs.getLength()>=4){
 				a.setName(trimNewLine(tbs.item(0).getTextContent()));
 				a.setType(trimNewLine(tbs.item(1).getTextContent()));
 				a.setRequired(trimNewLine(tbs.item(2).getTextContent()).equals("Yes")? true: false);
 				a.setDescription(trimNewLine(tbs.item(3).getTextContent()));
 			}
+			
 			for(int i=4; i<tbs.getLength(); i++){
-				processSubElementsMinLength(a, trimNewLine(tbs.item(i).getTextContent()));
-				processSubElementsMaxLength(a, trimNewLine(tbs.item(i).getTextContent()));
-				processSubElementsTotalDigits(a, trimNewLine(tbs.item(i).getTextContent()));
+				String newS = trimNewLine(tbs.item(i).getTextContent());
+				boolean b1 = processSubElementsMinLength(a, newS);
+				boolean b2 = processSubElementsMaxLength(a, newS);
+				boolean b3 = processSubElementsTotalDigits(a, newS);
+				boolean b4 = processSubElementsValidValues(a, newS);
+				boolean b5 = processSubElementsNotes(a, newS);
+				list[i] = b1||b2||b3||b4||b5;
+				
+			}
+			for(int i=0; i<list.length; i++){
+				if(!list[i] ){
+					if(beforeTrue(i, list)){
+						a.appendDescription(trimNewLine(tbs.item(i).getTextContent()));
+					}
+					else{
+						a.appendExtra(trimNewLine(tbs.item(i).getTextContent()));
+					}
+				}
 			}
 			addEleToSubElements(a);
 		}
 	}
 	
-	public void processSubElementsMinLength(Attribute a, String raw){
-		Pattern p = Pattern.compile("minLength = (.*)(\\t|)");
+	public boolean processSubElementsMinLength(Attribute a, String raw){
+		Pattern p = Pattern.compile("minLength = (.*)\\t");
 		Matcher m = p.matcher(raw);
 		if(m.find()){
 			a.setMinLength(m.group(1));
-			//System.out.println(m.group(1));
+			return true;
 		}
+		return false;
 	}
 	
-	public void processSubElementsMaxLength(Attribute a, String raw){
-		Pattern p = Pattern.compile("maxLength = (.*)(\\t|)");
+	public boolean processSubElementsMaxLength(Attribute a, String raw){
+		Pattern p = Pattern.compile("maxLength = (.*)");
 		Matcher m = p.matcher(raw);
 		if(m.find()){
 			a.setMaxLength(m.group(1));
-			//System.out.println(m.group(1));
+//			System.out.println(m.group(1));
+			return true;
 		}
+		return false;
 	}
 	
-	public void processSubElementsTotalDigits(Attribute a, String raw){
-		Pattern p = Pattern.compile("totalDigits = (.*)(\\t|)");
+	public boolean processSubElementsTotalDigits(Attribute a, String raw){
+		Pattern p = Pattern.compile("totalDigits = (.*)");
 		Matcher m = p.matcher(raw);
 		if(m.find()){
 			a.setTotalDigits(m.group(1));
-			System.out.println(m.group(1));
+			return true;
 		}
+		return false;
+	}
+	
+	
+	public boolean processSubElementsValidValues(Attribute a, String raw){
+		Pattern p = Pattern.compile("Valid Values = (.*)(\\t|)");
+		Matcher m = p.matcher(raw);
+		if(m.find()){
+			a.setValidValues(m.group(1));
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean processSubElementsNotes(Attribute a, String raw){
+		Pattern p = Pattern.compile("Note: (.*)");
+		Matcher m = p.matcher(raw);
+		if(m.find()){
+			a.setNote(m.group(1));
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -426,6 +507,17 @@ public class DIVElement {
 		Pattern p = Pattern.compile(".* = .*");
 		Matcher m = p.matcher(match);
 		return m.find();
+	}
+	
+	private boolean beforeTrue(int index, boolean[] list){
+		int i = index+1;
+		while(i<list.length){
+			if(list[i]){
+				return true;
+			}
+			i++;
+		}
+		return false;
 	}
 
 }

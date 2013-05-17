@@ -10,6 +10,8 @@ public class Attribute {
 	private String maxLength;
 	private String totalDigits;
 	private String validValues;
+	private String note;
+	private String extra;
 	
 	public Attribute(){
 		name = "";
@@ -20,6 +22,8 @@ public class Attribute {
 		maxLength = "";
 		totalDigits = "";
 		validValues = "";
+		setNote("");
+		extra = "";
 	}
 
 	public String getName() {
@@ -52,6 +56,10 @@ public class Attribute {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	
+	public void appendDescription(String description){
+		this.description += description;
 	}
 
 	public String getMinLength() {
@@ -86,13 +94,37 @@ public class Attribute {
 		this.validValues = validValues;
 	}
 	
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
+	}
+
+	public String getExtra() {
+		return extra;
+	}
+
+	public void setExtra(String extra) {
+		this.extra = extra;
+	}
+	
+	public void appendExtra(String extra){
+		this.extra+=extra;
+	}
+
 	@Override
 	public String toString() {
 		return "Attribute [name=" + name + ", type=" + type + ", required="
 				+ required + ", description=" + description + ", minLength="
 				+ minLength + ", maxLength=" + maxLength + ", totalDigits="
-				+ totalDigits + ", validValues=" + validValues + "]";
+				+ totalDigits + ", validValues=" + validValues + ", note="
+				+ note + ", extra=" + extra + "]";
 	}
+
+
+
 	
 
 }
