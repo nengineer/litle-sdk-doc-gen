@@ -26,7 +26,7 @@ public class ReadXMLFile {
 
 		  FileWriter fstream = null;
 		try {
-			fstream = new FileWriter("/usr/local/litle-home/zhe/parsePDF/parsedOutput.txt");
+			fstream = new FileWriter("/usr/local/litle-home/vchouhan/Desktop/project/parsedOutput.txt");
 
 		BufferedWriter out = new BufferedWriter(fstream);
 		

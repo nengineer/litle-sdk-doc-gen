@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class StringLocaterForJava implements StringLocater {
 	
@@ -30,7 +32,27 @@ public class StringLocaterForJava implements StringLocater {
 				String currentLine;
 				while((currentLine = reader.readLine()) != null){
 					lineNum++;
+					
+//					Pattern p = Pattern.compile("public .*"+key.toLowerCase()+"(.*)");
+//					Matcher m = p.matcher(currentLine.toLowerCase());
+//					if(m.find() && !currentLine.toLowerCase().contains("=")){
+//						sTemp.getLocations().add(lineNum);
+//					}
+					
+//					String[] currentLineArray = currentLine.split("^[(]");
+//					
+//					if(currentLineArray.length == 2){
+//						if(currentLineArray[0].endsWith(key)){
+//							sTemp.getLocations().add(lineNum);
+//						}
+//					}
+					
 					if(currentLine.toLowerCase().contains(key.toLowerCase()) && currentLine.contains("public")&& currentLine.contains("(") && !currentLine.contains("=")){
+						
+						String[] parts = currentLine.split("(");
+						
+						
+						
 						sTemp.getLocations().add(lineNum);
 					} 
 				}
