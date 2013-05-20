@@ -297,9 +297,9 @@ public class DIVElement {
 			if (nodeContent.equals(XMLLookUpStrings.PARENTELEMENTS)) {
 				extractParentElements(node);
 			}
-//			if (nodeContent.equals(XMLLookUpStrings.SUBELEMENTS)) {
-//				extractSubElements(node);
-//			}
+			if (nodeContent.equals(XMLLookUpStrings.SUBELEMENTS)) {
+				extractSubElements(node);
+			}
 			if (nodeContent.equals(XMLLookUpStrings.CHILDELEMENTS)) {
 				extractChildElements(node);
 			}

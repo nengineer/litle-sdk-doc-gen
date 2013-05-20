@@ -32,22 +32,35 @@ public class StringLocaterForJava implements StringLocater {
 				String currentLine;
 				while((currentLine = reader.readLine()) != null){
 					lineNum++;
-					
-//					Pattern p = Pattern.compile("public .*"+key.toLowerCase()+"(.*)");
-//					Matcher m = p.matcher(currentLine.toLowerCase());
-//					if(m.find() && !currentLine.toLowerCase().contains("=")){
-//						sTemp.getLocations().add(lineNum);
-//					}
-					
-//					String[] currentLineArray = currentLine.split("^[(]");
-//					
-//					if(currentLineArray.length == 2){
-//						if(currentLineArray[0].endsWith(key)){
-//							sTemp.getLocations().add(lineNum);
-//						}
-//					}
-					
-					if(currentLine.toLowerCase().contains(key + "(".toLowerCase()) && currentLine.contains("public")&&!currentLine.contains("=")){
+					if(currentLine.toLowerCase().contains("set" + key + "(".toLowerCase()) && currentLine.contains("public")&&!currentLine.contains("=")){
+						sTemp.getLocations().add(lineNum);						
+					} else if(currentLine.toLowerCase().contains("get" + key + "(".toLowerCase()) && currentLine.contains("public")&&!currentLine.contains("=")){
+						sTemp.getLocations().add(lineNum);	
+					}else if(currentLine.toLowerCase().contains("is" + key + "(".toLowerCase()) && currentLine.contains("public")&&!currentLine.contains("=")){
+						sTemp.getLocations().add(lineNum);
+					}
+				}
+				reader.close();
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void findLocationsForEnum(String key){
+		
+		StringLocaterForJava sTemp = this;
+		
+		File temp = new File(sTemp.getFileAddress());
+		//checking for permissions
+		if(temp.canRead()){
+			try {
+				BufferedReader reader = new BufferedReader(new FileReader(temp));
+				int lineNum = 0;
+				String currentLine;
+				while((currentLine = reader.readLine()) != null){
+					lineNum++;
+					if(currentLine.trim().matches(".*\\b("+key.toUpperCase()+")\\b.*")&&currentLine.trim().startsWith(key.toUpperCase())){
 						sTemp.getLocations().add(lineNum);						
 					} 
 				}
@@ -57,8 +70,7 @@ public class StringLocaterForJava implements StringLocater {
 			}
 		}
 	}
-
-
+	
 
 	public List<Integer> getLocations() {
 		// TODO Auto-generated method stub
