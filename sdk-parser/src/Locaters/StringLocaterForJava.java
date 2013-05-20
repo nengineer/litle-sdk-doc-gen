@@ -47,13 +47,8 @@ public class StringLocaterForJava implements StringLocater {
 //						}
 //					}
 					
-					if(currentLine.toLowerCase().contains(key.toLowerCase()) && currentLine.contains("public")&& currentLine.contains("(") && !currentLine.contains("=")){
-						
-						String[] parts = currentLine.split("(");
-						
-						
-						
-						sTemp.getLocations().add(lineNum);
+					if(currentLine.toLowerCase().contains(key + "(".toLowerCase()) && currentLine.contains("public")&&!currentLine.contains("=")){
+						sTemp.getLocations().add(lineNum);						
 					} 
 				}
 				reader.close();

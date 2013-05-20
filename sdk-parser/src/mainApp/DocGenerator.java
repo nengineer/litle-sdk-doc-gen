@@ -43,7 +43,7 @@ public class DocGenerator {
 			List<DIVElement> eList = rd.getDIVs();
 			
 			for(DIVElement first : eList){	
-				if(first.getEleName().equals("card")){
+				if(!first.getEleName().trim().isEmpty()){
 					// data extracted from DIV element
 					DataExtracterForJava dx = new DataExtracterForJava();
 					dx.extractData(first);

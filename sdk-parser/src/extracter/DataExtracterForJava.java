@@ -19,8 +19,17 @@ public class DataExtracterForJava implements DataExtracter{
 		// TODO Auto-generated method stub
 		DataExtracterForJava dx = this;
 		
-		
-		dx.getDList().add(div.getDescrip());
+		if(div.getDescrip().split("\\.").length > 1){
+			String[] parts = div.getDescrip().split("\\.");
+			
+			for(String p : parts){
+				dx.getDList().add(p.trim());
+			}
+			
+		}else{
+			dx.getDList().add(div.getDescrip());
+		}
+
 		
 		dx.getDList().add("The " + div.getEleName() + "field is required by :");
 		
