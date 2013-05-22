@@ -150,35 +150,42 @@ public class DIVElement {
 			out.write("========================================================================================\n");
 
 		this.extractItemName(div);
-		out.write("Item Name: "+ this.eleName + "\n");
+		if(this.eleName.equals("addressLine1,addressLine2,addressLine3")){
+			String[] eleNames = this.eleName.split(",");
+			for(String eleName: eleNames){
+				writeToFile(div, out, eleName);
+			}
+		}
+		else{
+			writeToFile(div,out,this.eleName);
+		}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public void writeToFile(Element div, BufferedWriter out, String elementName){
+		try {
+		out.write("Item Name: "+ elementName + "\n");
 		out.write("Description: "+ this.descrip+ "\n");
-//		System.out.println("Item Name: " + this.eleName);
-//		System.out.println("Description: " + this.descrip);
 		for (Entry<String, String> i : attrs.entrySet()) {
-//			System.out.println("Key Attributes: " + i.getKey() + ", "
-//					+ i.getValue());
 			out.write("Key Attributes: " + i.getKey() + "| "
 					+ i.getValue() + "\n");
 		}
 		this.extractNotesOptional(div);
 		for (String s : notes) {
-//		System.out.println("Note: " + s);
 			out.write("Note: " + s+ "\n");
-//		}
 		}
 		this.extractSubHeaderElement(div);
 		for (String s : parentElements) {
-//			System.out.println("Parent Element: " + s);
 			out.write("Parent Element: " + s+ "\n");
-//		}
 		}
 		for (Attribute a: subElements){
-//			System.out.println(a.toString());
 			out.write(a.toString()+ "\n");
 		}
 		for (Entry<String, String> i : childElements.entrySet()) {
-//			System.out.println("Child Element: " + i.getKey() + ", "
-//					+ i.getValue());
 			out.write("Child Element: " + i.getKey() + "| "
 					+ i.getValue()+ "\n");
 		}
@@ -191,7 +198,6 @@ public class DIVElement {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
 
 	/**
