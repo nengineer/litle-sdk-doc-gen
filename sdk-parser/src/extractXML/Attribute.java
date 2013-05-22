@@ -1,5 +1,14 @@
 package extractXML;
 
+import java.io.File;
+
+import Locaters.FileLocater;
+import Locaters.StringLocaterForJava;
+
+import combiner.ContentCombiner;
+
+import extracter.DataExtracterForJava;
+
 public class Attribute {
 	
 	private String name;
@@ -12,6 +21,7 @@ public class Attribute {
 	private String validValues;
 	private String note;
 	private String extra;
+	private int nchanges = 0;
 	
 	public Attribute(){
 		name = "";
@@ -113,6 +123,10 @@ public class Attribute {
 	public void appendExtra(String extra){
 		this.extra+=extra;
 	}
+	
+	public void setNChanges(int n){
+		this.nchanges = n;
+	}
 
 	@Override
 	public String toString() {
@@ -121,6 +135,35 @@ public class Attribute {
 				+ minLength + ", maxLength=" + maxLength + ", totalDigits="
 				+ totalDigits + ", validValues=" + validValues + ", note="
 				+ note + ", extra=" + extra + "]";
+	}
+	
+	
+	public void generateAttributesDocForJava(DIVElement ele, String dirAddress){
+		
+		DataExtracterForJava da = new DataExtracterForJava();
+		da.extractDataForAttr(this);
+		da.createData();
+		String Attrdata = da.getData();
+		FileLocater fattr = new FileLocater();
+		fattr.locate(ele.getEleName().toLowerCase(), dirAddress);
+		if(!(fattr.getResult() == null)){	
+			for(String fileAddattr : fattr.getResult()){
+				if(fileAddattr.contains(".java")){
+					StringLocaterForJava sattr = new StringLocaterForJava(fileAddattr);
+					sattr.findLocations(this.getName().toLowerCase());
+					if(!sattr.getLocations().isEmpty()){
+						this.setNChanges(this.getNChanges() + sattr.getLocations().size());
+						System.out.println("Attribute : " + this.getName() + " updated comments at : " + sattr.getLocations().size() + "for file : " + fileAddattr);
+						new ContentCombiner(sattr.getLocations()).combine(new File(fileAddattr), Attrdata);
+					}
+				}
+			}
+		}
+	}
+
+	public int getNChanges() {
+		// TODO Auto-generated method stub
+		return this.nchanges;
 	}
 
 

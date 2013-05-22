@@ -1,5 +1,6 @@
 package extractXML;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,6 +13,13 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import Locaters.FileLocater;
+import Locaters.StringLocaterForJava;
+
+import combiner.ContentCombiner;
+
+import extracter.DataExtracterForJava;
+
 
 public class DIVElement {
 
@@ -23,7 +31,8 @@ public class DIVElement {
 	private ArrayList<Attribute> subElements;
 	private HashMap<String, String> childElements;
 	private HashMap<String, String> enumerations;
-	private ArrayList<String> notes; //the notes before the examples
+	private ArrayList<String> notes;
+	private int nchanges = 0;//the notes before the examples
 
 	// private ArrayList<Attribute> attributes;
 
@@ -139,6 +148,14 @@ public class DIVElement {
 	public void addEleToEnums(String key, String value) {
 		this.enumerations.put(key, value);
 	} 
+	
+	public void setNChanges(int i){
+		this.nchanges = i;
+	}
+	
+	public int getNChanges(){
+		return this.nchanges;
+	}
 
 	/**
 	 * process the whole block of XML element
@@ -578,6 +595,56 @@ public class DIVElement {
 			i++;
 		}
 		return false;
+	}
+	
+	public void generateElementDocForJava(String dirAddress){
+
+		// data extracted from DIV element
+		DataExtracterForJava dx = new DataExtracterForJava();
+		dx.extractData(this);
+		dx.createData();
+		String payLoad = dx.getData();
+		
+		// finding parent and appending comments now
+		for(String parent : this.getParentElements()){
+			FileLocater fl = new FileLocater();
+			fl.locate(parent, dirAddress);
+			if(!(fl.getResult() == null)){	
+				for(String fileAdd : fl.getResult()){
+					StringLocaterForJava sl = new StringLocaterForJava(fileAdd);
+					sl.findLocations(this.getEleName().toLowerCase());
+					//System.out.println(fileAdd);
+					if(!sl.getLocations().isEmpty()){
+						this.setNChanges(this.getNChanges() + sl.getLocations().size());
+						System.out.println("Element : " + this.getEleName() + " updated comments at : " + sl.getLocations().size() + "for file : " + fileAdd);
+						new ContentCombiner(sl.getLocations()).combine(new File(fileAdd), payLoad);
+					}
+				}
+			}	
+		}
+	}
+	
+	//finding enumeration file types and appending enumeration over it
+	public void generateEnumDocForJava(String dirAddress){ 
+		for(Entry<String, String> e : this.getEnumerations().entrySet()){
+			FileLocater fenum = new FileLocater();
+			fenum.locate("typeenum", dirAddress);
+			if(!(fenum.getResult() == null)){	
+				for(String fileAddenum : fenum.getResult()){
+					StringLocaterForJava senum = new StringLocaterForJava(fileAddenum);
+					senum.findLocationsForEnum(e.getKey());
+					DataExtracterForJava de = new DataExtracterForJava();
+					de.extractDataForEnum(e.getValue());
+					de.createData();
+					String enumData = de.getData();
+					//System.out.println(fileAdd);
+					if(!senum.getLocations().isEmpty()){
+						System.out.println("Enumeration : " + e.getKey() + " updated comments at : " + senum.getLocations().size() + "for file : " + fileAddenum);
+						new ContentCombiner(senum.getLocations()).combine(new File(fileAddenum), enumData);
+					}
+				}	
+			}
+		}
 	}
 
 }

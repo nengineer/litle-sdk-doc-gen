@@ -185,6 +185,34 @@ public class ContentCombiner {
 		}
 	}
 	
+	public void removeUnchangedDocs(File file){
+		ContentCombiner cc = this;
+		
+		cc.storeContent(file);
+		cc.processContent();
+		cc.removeFlagged(file);
+	}
+	
+	public void removeFlagged(File file){
+    	try{
+        	ContentCombiner cc = this;
+        	int count = 0;
+        	FileWriter filewriter = new FileWriter(file);
+    	    BufferedWriter bufferwriter = new BufferedWriter(filewriter);
+        	while(count < cc.getDataList().size()){
+        		if(cc.getFlaggedLocations().contains(count)){
+        			count++;
+        		}else{
+               		bufferwriter.write(cc.getDataList().get(count)+ "\n");
+            		count++;
+        		}
+        	}
+        	bufferwriter.close();
+    	}catch(Exception e){
+    		e.printStackTrace();
+    	}
+	}
+	
     
         
     public List<String> getDataList(){

@@ -1,7 +1,12 @@
 package mainApp;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -31,100 +36,52 @@ public class DocGenerator {
 	public void run(String fileaddress, String dirAddress){
 		
 		try{
-			File fXmlFile = new File(fileaddress);
-			
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(fXmlFile);
-			doc.getDocumentElement().normalize();
 			ReadXMLFile rd = new ReadXMLFile();
-			rd.extractDIVs(doc);
+			rd.extractDIVs(fileaddress);
 			
 			
 			// got element list extracted from xml file
 			List<DIVElement> eList = rd.getDIVs();
-			
+			Map<String, Object> noChangeMap = new HashMap<String, Object>();
 			for(DIVElement first : eList){	
 				if(!first.getEleName().trim().isEmpty()){
-					// data extracted from DIV element
-					DataExtracterForJava dx = new DataExtracterForJava();
-					dx.extractData(first);
-					dx.createData();
-					String payLoad = dx.getData();
-					
-					// finding elements for the corresponding attributes and updating
+					first.generateElementDocForJava(dirAddress);
 					for(Attribute a : first.getSubElements()){
-						
-						//System.out.println("Attribute : " + a.getName() + "is in the loop");
-						
-						DataExtracterForJava da = new DataExtracterForJava();
-						da.extractDataForAttr(a);
-						da.createData();
-						String Attrdata = da.getData();
-						
-						FileLocater fattr = new FileLocater();
-						
-						fattr.locate(first.getEleName().toLowerCase(), dirAddress);
-						if(!(fattr.getResult() == null)){	
-							for(String fileAddattr : fattr.getResult()){
-								if(fileAddattr.contains(".java")){
-									StringLocaterForJava sattr = new StringLocaterForJava(fileAddattr);
-									sattr.findLocations(a.getName().toLowerCase());
-									//System.out.println(fileAdd);
-									if(!sattr.getLocations().isEmpty()){
-										System.out.println("Attribute : " + a.getName() + " updated comments at : " + sattr.getLocations().size() + "for file : " + fileAddattr);
-										new ContentCombiner(sattr.getLocations()).combine(new File(fileAddattr), Attrdata);
-									}
-								}
-							}	
+						a.generateAttributesDocForJava(first, dirAddress);
+						if(a.getNChanges() == 0){
+							//noChangeElementList.add("No locations for the attribute : " + a.getName() + " of element : " + first.getEleName());
+							if(!noChangeMap.containsKey(a.getName().toLowerCase()))
+								noChangeMap.put(a.getName().toLowerCase(), a);
+						}else{
+							if(noChangeMap.containsKey(a.getName().toLowerCase()))
+								noChangeMap.remove(a.getName().toLowerCase());
 						}
 					}
-					
-					// finding parent and appending commments now
-					for(String parent : first.getParentElements()){
-						FileLocater fl = new FileLocater();
-						fl.locate(parent, dirAddress);
-						if(!(fl.getResult() == null)){	
-							for(String fileAdd : fl.getResult()){
-								if(fileAdd.contains(".java")){
-									StringLocaterForJava sl = new StringLocaterForJava(fileAdd);
-									sl.findLocations(first.getEleName().toLowerCase());
-									//System.out.println(fileAdd);
-									if(!sl.getLocations().isEmpty()){
-										System.out.println("Element : " + first.getEleName() + " updated comments at : " + sl.getLocations().size() + "for file : " + fileAdd);
-										new ContentCombiner(sl.getLocations()).combine(new File(fileAdd), payLoad);
-									}
-								}
-							}	
-						}	
+					if(first.getNChanges() == 0){
+						if(!noChangeMap.containsKey(first.getEleName().toLowerCase()))
+							noChangeMap.put(first.getEleName().toLowerCase(), first);
+					}else{
+						if(noChangeMap.containsKey(first.getEleName().toLowerCase()))
+							noChangeMap.remove(first.getEleName().toLowerCase());
 					}
-					// finding enumeration file types and appending enumeration over it
-					for(Entry<String, String> e : first.getEnumerations().entrySet()){
-						FileLocater fenum = new FileLocater();
-						
-						fenum.locate("typeenum", dirAddress);
-						if(!(fenum.getResult() == null)){	
-							for(String fileAddenum : fenum.getResult()){
-								if(fileAddenum.contains(".java")){
-									StringLocaterForJava senum = new StringLocaterForJava(fileAddenum);
-									senum.findLocationsForEnum(e.getKey());
-									
-									DataExtracterForJava de = new DataExtracterForJava();
-									
-									de.extractDataForEnum(e.getValue());
-									de.createData();
-									String enumData = de.getData();
-									//System.out.println(fileAdd);
-									if(!senum.getLocations().isEmpty()){
-										System.out.println("Enumeration : " + e.getKey() + " updated comments at : " + senum.getLocations().size() + "for file : " + fileAddenum);
-										new ContentCombiner(senum.getLocations()).combine(new File(fileAddenum), enumData);
-									}
-								}
-							}	
-						}
-					}
+					first.generateEnumDocForJava(dirAddress);
 				}
 			}
+			for(Entry<String, Object> e : noChangeMap.entrySet()){
+				//System.out.println(e.getKey());
+				
+				FileLocater ftest = new FileLocater();
+				ftest.locate("", dirAddress);
+				for(String fileAdd : ftest.getResult()){
+					StringLocaterForJava stest = new StringLocaterForJava(fileAdd);
+					stest.findLocations(e.getKey().toLowerCase());
+					if(!stest.getLocations().isEmpty()){
+						//this.setNChanges(this.getNChanges() + sl.getLocations().size());
+						System.out.println("Element : " + e.getKey() + " updated comments at : " + stest.getLocations().size() + "for file : " + fileAdd);
+						new ContentCombiner(stest.getLocations()).removeUnchangedDocs(new File(fileAdd));
+					}
+				}
+			}	
 		}catch(Exception e){
 			e.printStackTrace();
 		}
