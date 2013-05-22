@@ -146,39 +146,34 @@ public class DIVElement {
 	 * @param div
 	 */
 	public void processDIV(Element div, BufferedWriter out) {
-		try {
-			out.write("========================================================================================\n");
-
 		this.extractItemName(div);
-		if(this.eleName.equals("addressLine1,addressLine2,addressLine3")){
+		this.extractNotesOptional(div);
+		this.extractSubHeaderElement(div);
+		if(this.eleName.contains(",")){
 			String[] eleNames = this.eleName.split(",");
 			for(String eleName: eleNames){
 				writeToFile(div, out, eleName);
 			}
 		}
 		else{
-			writeToFile(div,out,this.eleName);
-		}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			writeToFile(div,out, this.eleName);
 		}
 		
 	}
 	
-	public void writeToFile(Element div, BufferedWriter out, String elementName){
+	public void writeToFile(Element div, BufferedWriter out, String eleName){
 		try {
-		out.write("Item Name: "+ elementName + "\n");
+		out.write("========================================================================================\n");
+		out.write("Item Name: "+ eleName + "\n");
 		out.write("Description: "+ this.descrip+ "\n");
 		for (Entry<String, String> i : attrs.entrySet()) {
 			out.write("Key Attributes: " + i.getKey() + "| "
 					+ i.getValue() + "\n");
 		}
-		this.extractNotesOptional(div);
 		for (String s : notes) {
 			out.write("Note: " + s+ "\n");
 		}
-		this.extractSubHeaderElement(div);
+		
 		for (String s : parentElements) {
 			out.write("Parent Element: " + s+ "\n");
 		}

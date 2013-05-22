@@ -26,7 +26,7 @@ public class ReadXMLFile {
 
 		  FileWriter fstream = null;
 		try {
-			fstream = new FileWriter("/usr/local/litle-home/vchouhan/Desktop/project/parsedOutput.txt");
+			fstream = new FileWriter("/usr/local/litle-home/zhe/parsePDF/parsedOutput.txt");
 
 		BufferedWriter out = new BufferedWriter(fstream);
 		
@@ -38,7 +38,16 @@ public class ReadXMLFile {
 					Element e = (Element) node;
 					DIVElement div = new DIVElement();
 					div.processDIV(e, out);
-					DIVlist.add(div);
+					if(div.getEleName().contains(",")){
+						String[] eleNames = div.getEleName().split(",");
+						for(String eleName: eleNames){
+							div.setEleName(eleName);
+							DIVlist.add(div);
+						}
+					}
+					else{
+						DIVlist.add(div);
+					}
 				}
 
 			}
