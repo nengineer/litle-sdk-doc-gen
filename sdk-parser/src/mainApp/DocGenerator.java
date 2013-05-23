@@ -15,6 +15,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 
 import combiner.ContentCombiner;
+import combiner.LineMarkerForJava;
 
 import Locaters.FileLocater;
 //import Locaters.StringLocater;
@@ -80,7 +81,7 @@ public class DocGenerator {
 			for(String fileAdd : ftest.getResult()){
 				if(new File(fileAdd).canWrite()){
 					System.out.println("processing file : " + fileAdd);
-					ContentCombiner ctest = new ContentCombiner(new ArrayList<Integer>());
+					ContentCombiner ctest = new ContentCombiner(new ArrayList<Integer>(), new LineMarkerForJava());
 					ctest.storeContent(new File(fileAdd));
 					for(String cline : ctest.getDataList()){
 						if(cline.trim().startsWith("public")){

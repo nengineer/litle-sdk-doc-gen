@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import combiner.ContentCombiner;
+import combiner.LineMarkerForJava;
 
 public class Test {
 
@@ -20,7 +21,7 @@ public class Test {
 			String fileAdd = "/usr/local/litle-home/vchouhan/Desktop/testarena/testarena1/testarena2/litle-sdk-for-java/generated/com/litle/sdk/generate/EnhancedAuthResponse.java";
 
 			System.out.print("processing file : " + fileAdd);
-			ContentCombiner ctest = new ContentCombiner(new ArrayList<Integer>());
+			ContentCombiner ctest = new ContentCombiner(new ArrayList<Integer>(), new LineMarkerForJava());
 			ctest.storeContent(new File(fileAdd));
 			for(String cline : ctest.getDataList()){
 				if(cline.trim().startsWith("public")){
