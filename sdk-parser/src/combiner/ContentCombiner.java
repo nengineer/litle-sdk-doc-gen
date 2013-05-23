@@ -16,13 +16,15 @@ public class ContentCombiner {
 	List<Integer> locations = new ArrayList<Integer>();
 	List<String> dataList; 
 	List<Integer> flaggedlocations;
+	LineMarker lineMarker;
 	
 	
-	public ContentCombiner(List<Integer> loclist){
+	public ContentCombiner(List<Integer> loclist, LineMarker lm){
 			
 		this.locations = loclist;
 		this.dataList =new ArrayList<String>();
 		this.flaggedlocations = new ArrayList<Integer>();
+		this.lineMarker = lm;
 	}
 	
 	
@@ -42,11 +44,12 @@ public class ContentCombiner {
     		}
     		
     		List<Integer> tl = new ArrayList<Integer>();
+    		LineMarker lm = new LineMarkerForJava();
     		
     		tl.add(5);
     		tl.add(10);
     		
-    		new ContentCombiner(tl).combine(file, data1);
+    		new ContentCombiner(tl, lm).combine(file, data1);
     		
     		//new ContentCombiner(7).combine(file, data1); 
     
@@ -171,18 +174,19 @@ public class ContentCombiner {
     
 	public void markLines(int location){
 		
-		List<String> dlist = this.getDataList();
-		int i = location-1;		
-		while(dlist.get(i).trim().isEmpty()){
-			i--;
-		}
-		if(dlist.get(i).trim().endsWith("*/")){
-			while(!dlist.get(i).trim().contains("/*")){
-				getFlaggedLocations().add(i);
-				i--;
-			}
-			getFlaggedLocations().add(i);
-		}
+//		List<String> dlist = this.getDataList();
+//		int i = location-1;		
+//		while(dlist.get(i).trim().isEmpty()){
+//			i--;
+//		}
+//		if(dlist.get(i).trim().endsWith("*/")){
+//			while(!dlist.get(i).trim().contains("/*")){
+//				getFlaggedLocations().add(i);
+//				i--;
+//			}
+//			getFlaggedLocations().add(i);
+//		}
+		this.lineMarker.markLines(location, this);
 	}
 	
 	public void removeUnchangedDocs(File file){
@@ -221,6 +225,10 @@ public class ContentCombiner {
     
     public List<Integer> getFlaggedLocations(){
     	return this.flaggedlocations;
+    }
+    
+    public void addToFlaggedLocation(int loc){
+    	this.flaggedlocations.add(loc);
     }
     
 }

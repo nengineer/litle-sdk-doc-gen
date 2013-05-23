@@ -14,6 +14,7 @@ import Locaters.StringLocaterForJava;
 import Locaters.StringLocatorForDotNet;
 
 import combiner.ContentCombiner;
+import combiner.LineMarkerForDotNet;
 
 import extractXML.DIVElement;
 import extractXML.ReadXMLFile;
@@ -86,7 +87,7 @@ public class DocGeneratorForDotNet {
 									//System.out.println(fileAdd);
 									if(!sl.getLocations().isEmpty()){
 										System.out.println("Element : " + first.getEleName() + " updated comments at : " + sl.getLocations().size() + "for file : " + fileAdd);
-										new ContentCombiner(sl.getLocations()).combine(new File(fileAdd), payLoad);
+										new ContentCombiner(sl.getLocations(), new LineMarkerForDotNet()).combine(new File(fileAdd), payLoad);
 									}
 								}
 						}	

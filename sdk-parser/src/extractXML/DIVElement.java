@@ -17,6 +17,7 @@ import Locaters.FileLocater;
 import Locaters.StringLocaterForJava;
 
 import combiner.ContentCombiner;
+import combiner.LineMarkerForJava;
 
 import extracter.DataExtracterForJava;
 
@@ -617,7 +618,7 @@ public class DIVElement {
 					if(!sl.getLocations().isEmpty()){
 						this.setNChanges(this.getNChanges() + sl.getLocations().size());
 						System.out.println("Element : " + this.getEleName() + " updated comments at : " + sl.getLocations().size() + "for file : " + fileAdd);
-						new ContentCombiner(sl.getLocations()).combine(new File(fileAdd), payLoad);
+						new ContentCombiner(sl.getLocations(), new LineMarkerForJava()).combine(new File(fileAdd), payLoad);
 					}
 				}
 			}	
@@ -640,7 +641,7 @@ public class DIVElement {
 					//System.out.println(fileAdd);
 					if(!senum.getLocations().isEmpty()){
 						System.out.println("Enumeration : " + e.getKey() + " updated comments at : " + senum.getLocations().size() + "for file : " + fileAddenum);
-						new ContentCombiner(senum.getLocations()).combine(new File(fileAddenum), enumData);
+						new ContentCombiner(senum.getLocations(), new LineMarkerForJava()).combine(new File(fileAddenum), enumData);
 					}
 				}	
 			}

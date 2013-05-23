@@ -6,6 +6,7 @@ import Locaters.FileLocater;
 import Locaters.StringLocaterForJava;
 
 import combiner.ContentCombiner;
+import combiner.LineMarkerForJava;
 
 import extracter.DataExtracterForJava;
 
@@ -154,7 +155,7 @@ public class Attribute {
 					if(!sattr.getLocations().isEmpty()){
 						this.setNChanges(this.getNChanges() + sattr.getLocations().size());
 						System.out.println("Attribute : " + this.getName() + " updated comments at : " + sattr.getLocations().size() + "for file : " + fileAddattr);
-						new ContentCombiner(sattr.getLocations()).combine(new File(fileAddattr), Attrdata);
+						new ContentCombiner(sattr.getLocations(), new LineMarkerForJava()).combine(new File(fileAddattr), Attrdata);
 					}
 				}
 			}

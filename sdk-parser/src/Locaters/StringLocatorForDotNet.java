@@ -33,7 +33,7 @@ public class StringLocatorForDotNet implements StringLocater {
 				while((currentLine = reader.readLine()) != null){
 					lineNum++;
 					
-					Pattern p = Pattern.compile("public .*" + key);
+					Pattern p = Pattern.compile("public .*" + "\\b" + key + "\\b");
 					Matcher m = p.matcher(currentLine.toLowerCase());
 					if( m.find()){
 						sTemp.getLocations().add(lineNum);
