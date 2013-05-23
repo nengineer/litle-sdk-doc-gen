@@ -32,13 +32,20 @@ public class StringLocatorForDotNet implements StringLocater {
 				String currentLine;
 				while((currentLine = reader.readLine()) != null){
 					lineNum++;
-					if(currentLine.toLowerCase().contains("set" + key + "(".toLowerCase()) && currentLine.contains("public")&&!currentLine.contains("=")){
-						sTemp.getLocations().add(lineNum);						
-					} else if(currentLine.toLowerCase().contains("get" + key + "(".toLowerCase()) && currentLine.contains("public")&&!currentLine.contains("=")){
-						sTemp.getLocations().add(lineNum);	
-					}else if(currentLine.toLowerCase().contains("is" + key + "(".toLowerCase()) && currentLine.contains("public")&&!currentLine.contains("=")){
+					
+					Pattern p = Pattern.compile("public .*" + key);
+					Matcher m = p.matcher(currentLine.toLowerCase());
+					if( m.find()){
 						sTemp.getLocations().add(lineNum);
 					}
+					
+//					if(currentLine.toLowerCase().contains("set" + key + "(".toLowerCase()) && currentLine.contains("public")&&!currentLine.contains("=")){
+//						sTemp.getLocations().add(lineNum);						
+//					} else if(currentLine.toLowerCase().contains("get" + key + "(".toLowerCase()) && currentLine.contains("public")&&!currentLine.contains("=")){
+//						sTemp.getLocations().add(lineNum);	
+//					}else if(currentLine.toLowerCase().contains("is" + key + "(".toLowerCase()) && currentLine.contains("public")&&!currentLine.contains("=")){
+//						sTemp.getLocations().add(lineNum);
+//					}
 				}
 				reader.close();
 			}catch(Exception e){
