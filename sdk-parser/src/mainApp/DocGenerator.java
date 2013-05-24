@@ -44,67 +44,69 @@ public class DocGenerator {
 			// got element list extracted from XML file
 			List<DIVElement> eList = rd.getDIVs();
 
-			// created a map to gather unused elements and attributes
+			// cleaning the old auto generated comments from the java package 
 			Map<String, Integer> noChangeMap = new HashMap<String, Integer>();
 			
-			for(DIVElement first : eList){	
-				if(!first.getEleName().trim().isEmpty()){
-					first.generateElementDocForJava(dirAddress);
-					
+			for(DIVElement e : eList){
+			    if(!e.getEleName().trim().isEmpty()){
+			        if(!noChangeMap.containsKey(e.getEleName().toLowerCase()))
+			            noChangeMap.put(e.getEleName().toLowerCase(), 0);
+			        
+			        for(Attribute a : e.getSubElements()){
+		                 if(!noChangeMap.containsKey(a.getName().toLowerCase()))
+		                        noChangeMap.put(a.getName().toLowerCase(), 0);
+			        }
+			    }
+			}
+			
+	         FileLocater ftest = new FileLocater();
+	            
+	         ftest.locate("java", dirAddress + "/generated/com/litle/sdk/generate/");
+	            
+	         for(String fileAdd : ftest.getResult()){
+	             if(new File(fileAdd).canWrite()){
+	                 System.out.println("processing file : " + fileAdd);
+	                 ContentCombiner ctest = new ContentCombiner(new ArrayList<Integer>(), new LineMarkerForJava());
+	                 ctest.storeContent(new File(fileAdd));
+	                 for(String cline : ctest.getDataList()){
+	                     if(cline.trim().startsWith("public")){
+	                         for(Entry<String, Integer> e : noChangeMap.entrySet()){
+	                             if(cline.toLowerCase().contains("set" + e.getKey().toLowerCase() + "(")
+	                                     ||cline.toLowerCase().contains("get" + e.getKey().toLowerCase() + "(")
+	                                     ||cline.toLowerCase().contains("is" + e.getKey().toLowerCase() + "(")){
+	                                 ctest.getLocations().add(ctest.getDataList().indexOf(cline)+1);
+	                                 e.setValue(e.getValue() + ctest.getLocations().size());
+	                             }
+	                         }
+	                     }
+	                 }
+	                 System.out.println(" at " + ctest.getLocations().size() + " number of places");
+	                 ctest.processContent();
+	                 ctest.removeFlagged(new File(fileAdd));
+	             }
+	         }
+	            
+	         for(Entry<String, Integer> e : noChangeMap.entrySet()){
+	             System.out.println(e.getKey() + " : " + e.getValue());
+	         }
+			
+	         Map<String, Integer> noRepeatMap = new HashMap<String, Integer>();
+			
+	         for(DIVElement first : eList){	
+	             if(!first.getEleName().trim().isEmpty()){
+	                 first.generateElementDocForJava(dirAddress);
+	                 noRepeatMap.put(first.getEleName().toLowerCase(), 0);
 					// processing attribute for the Element
 					for(Attribute a : first.getSubElements()){
-						a.generateAttributesDocForJava(first, dirAddress);
-						
-						// adding attribute to the Map for processing left out java docs 
-						if(a.getNChanges() == 0 && !noChangeMap.containsKey(a.getName().toLowerCase()))
-								noChangeMap.put(a.getName().toLowerCase(), 0);
-						else if(a.getNChanges() > 0 && noChangeMap.containsKey(a.getName().toLowerCase()))
-								noChangeMap.remove(a.getName().toLowerCase());
+					    if(!noRepeatMap.containsKey(a.getName().toLowerCase())){
+					        a.generateAttributesDocForJava(first, dirAddress);
+					        noRepeatMap.put(a.getName().toLowerCase(), 0);
+					    }
 					}
-					
-					// adding Element to the map for processing left out java docs 
-					if(first.getNChanges() == 0 && !noChangeMap.containsKey(first.getEleName().toLowerCase()))
-							noChangeMap.put(first.getEleName().toLowerCase(), 0);
-					else if(first.getNChanges() > 0 && noChangeMap.containsKey(first.getEleName().toLowerCase()))
-							noChangeMap.remove(first.getEleName().toLowerCase());
-
 					// processing Enumeration of the Element
 					first.generateEnumDocForJava(dirAddress);
 				}
 			}
-			
-			
-			FileLocater ftest = new FileLocater();
-			
-			ftest.locate("java", dirAddress);
-			
-			for(String fileAdd : ftest.getResult()){
-				if(new File(fileAdd).canWrite()){
-					System.out.println("processing file : " + fileAdd);
-					ContentCombiner ctest = new ContentCombiner(new ArrayList<Integer>(), new LineMarkerForJava());
-					ctest.storeContent(new File(fileAdd));
-					for(String cline : ctest.getDataList()){
-						if(cline.trim().startsWith("public")){
-							for(Entry<String, Integer> e : noChangeMap.entrySet()){
-								if(cline.toLowerCase().contains("set" + e.getKey().toLowerCase() + "(")
-									||cline.toLowerCase().contains("get" + e.getKey().toLowerCase() + "(")
-									||cline.toLowerCase().contains("is" + e.getKey().toLowerCase() + "(")){
-										ctest.getLocations().add(ctest.getDataList().indexOf(cline)+1);
-										e.setValue(e.getValue() + 1);
-									}
-							}
-						}
-					}
-					System.out.println(" at " + ctest.getLocations().size() + " number of places");
-					ctest.processContent();
-					ctest.removeFlagged(new File(fileAdd));
-				}
-			}
-			
-			for(Entry<String, Integer> e : noChangeMap.entrySet()){
-				System.out.println(e.getKey() + " : " + e.getValue());
-			}
-
 		}catch(Exception e){
 			e.printStackTrace();
 		}
