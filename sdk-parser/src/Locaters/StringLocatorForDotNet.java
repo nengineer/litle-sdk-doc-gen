@@ -9,20 +9,21 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class StringLocatorForDotNet implements StringLocater {
-	
+
 	List<Integer> locations = new ArrayList<Integer>();
 	String fileAddress;
 	//String keyword;
-	
+
 	public StringLocatorForDotNet(String add){
 		this.fileAddress = add;
 		//this.keyword = key;
 	}
-	
-	public void findLocations(String key){
-		
+
+	@Override
+    public void findLocations(String key){
+
 		StringLocatorForDotNet sTemp = this;
-		
+
 		File temp = new File(sTemp.getFileAddress());
 		//checking for permissions
 		if(temp.canRead()){
@@ -32,20 +33,12 @@ public class StringLocatorForDotNet implements StringLocater {
 				String currentLine;
 				while((currentLine = reader.readLine()) != null){
 					lineNum++;
-					
+
 					Pattern p = Pattern.compile("public .*" + "\\b" + key + "\\b");
 					Matcher m = p.matcher(currentLine.toLowerCase());
 					if( m.find()){
 						sTemp.getLocations().add(lineNum);
 					}
-					
-//					if(currentLine.toLowerCase().contains("set" + key + "(".toLowerCase()) && currentLine.contains("public")&&!currentLine.contains("=")){
-//						sTemp.getLocations().add(lineNum);						
-//					} else if(currentLine.toLowerCase().contains("get" + key + "(".toLowerCase()) && currentLine.contains("public")&&!currentLine.contains("=")){
-//						sTemp.getLocations().add(lineNum);	
-//					}else if(currentLine.toLowerCase().contains("is" + key + "(".toLowerCase()) && currentLine.contains("public")&&!currentLine.contains("=")){
-//						sTemp.getLocations().add(lineNum);
-//					}
 				}
 				reader.close();
 			}catch(Exception e){
@@ -55,9 +48,9 @@ public class StringLocatorForDotNet implements StringLocater {
 	}
 
 	public void findLocationsForEnum(String key){
-		
+
 		StringLocatorForDotNet sTemp = this;
-		
+
 		File temp = new File(sTemp.getFileAddress());
 		//checking for permissions
 		if(temp.canRead()){
@@ -65,11 +58,21 @@ public class StringLocatorForDotNet implements StringLocater {
 				BufferedReader reader = new BufferedReader(new FileReader(temp));
 				int lineNum = 0;
 				String currentLine;
+				boolean lock = false;
 				while((currentLine = reader.readLine()) != null){
 					lineNum++;
-					if(currentLine.trim().matches(".*\\b("+key.toUpperCase()+")\\b.*")&&currentLine.trim().startsWith(key.toUpperCase())){
-						sTemp.getLocations().add(lineNum);						
-					} 
+
+					Pattern p = Pattern.compile("public enum .*");
+					Matcher m = p.matcher(currentLine.toLowerCase());
+					Pattern p1 = Pattern.compile("\\b"+key+"\\b"+",");
+					Matcher m1 = p1.matcher(currentLine.toLowerCase());
+					if( m.find() && !lock){
+						lock = true;
+					}
+					else if(m1.find() && lock){
+						sTemp.getLocations().add(lineNum);
+						lock = false;
+					}
 				}
 				reader.close();
 			}catch(Exception e){
@@ -77,7 +80,7 @@ public class StringLocatorForDotNet implements StringLocater {
 			}
 		}
 	}
-	
+
 
 	public List<Integer> getLocations() {
 		// TODO Auto-generated method stub
@@ -88,7 +91,7 @@ public class StringLocatorForDotNet implements StringLocater {
 		// TODO Auto-generated method stub
 		return fileAddress;
 	}
-	
-	
-	
+
+
+
 }

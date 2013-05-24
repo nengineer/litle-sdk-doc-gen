@@ -1,7 +1,6 @@
 package extractXML;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,16 +8,21 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import mainApp.DocGeneratorForDotNet;
+
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import Locaters.FileLocater;
 import Locaters.StringLocaterForJava;
+import Locaters.StringLocatorForDotNet;
 
 import combiner.ContentCombiner;
+import combiner.LineMarkerForDotNet;
 import combiner.LineMarkerForJava;
 
+import extracter.DataExtracterForDotNet;
 import extracter.DataExtracterForJava;
 
 
@@ -83,7 +87,7 @@ public class DIVElement {
 	public void setSubElements(ArrayList<Attribute> subElements) {
 		this.subElements = subElements;
 	}
-	
+
 	public void addEleToSubElements(Attribute e) {
 		this.subElements.add(e);
 	}
@@ -107,13 +111,13 @@ public class DIVElement {
 	public void setDescrip(String descrip) {
 		this.descrip = descrip;
 	}
-	
+
 	public void appendDescrip(String newDescrip){
 		this.descrip = this.descrip + newDescrip;
 	}
 
 
-	
+
 	public void addEleToAttrs(String key, String value) {
 		this.attrs.put(key, value);
 	}
@@ -133,7 +137,7 @@ public class DIVElement {
 	public void setNotes(ArrayList<String> notes) {
 		this.notes = notes;
 	}
-	
+
 	public void addEleToNotes(String e) {
 		this.notes.add(e);
 	}
@@ -145,22 +149,22 @@ public class DIVElement {
 	public void setEnumerations(HashMap<String, String> enumerations) {
 		this.enumerations = enumerations;
 	}
-	
+
 	public void addEleToEnums(String key, String value) {
 		this.enumerations.put(key, value);
-	} 
-	
+	}
+
 	public void setNChanges(int i){
 		this.nchanges = i;
 	}
-	
+
 	public int getNChanges(){
 		return this.nchanges;
 	}
 
 	/**
 	 * process the whole block of XML element
-	 * 
+	 *
 	 * @param div
 	 */
 	public void processDIV(Element div, BufferedWriter out) {
@@ -176,9 +180,9 @@ public class DIVElement {
 		else{
 			writeToFile(div,out, this.eleName);
 		}
-		
+
 	}
-	
+
 	public void writeToFile(Element div, BufferedWriter out, String eleName){
 		try {
 		out.write("========================================================================================\n");
@@ -191,7 +195,7 @@ public class DIVElement {
 		for (String s : notes) {
 			out.write("Note: " + s+ "\n");
 		}
-		
+
 		for (String s : parentElements) {
 			out.write("Parent Element: " + s+ "\n");
 		}
@@ -202,7 +206,7 @@ public class DIVElement {
 			out.write("Child Element: " + i.getKey() + "| "
 					+ i.getValue()+ "\n");
 		}
-		
+
 		for (Entry<String, String> i : enumerations.entrySet()) {
 			out.write("Enumeration: " + i.getKey() + "| "
 			+ i.getValue() + "\n");
@@ -215,7 +219,7 @@ public class DIVElement {
 
 	/**
 	 * extract the name of the XML element
-	 * 
+	 *
 	 * @param div
 	 */
 	public void extractItemName(Element div) {
@@ -266,14 +270,14 @@ public class DIVElement {
 				if(se.getTagName().equals(XMLLookUpStrings.BP_BODY)){
 					String s1 = trimNewLine(se.getTextContent());
 					formatTypes(s1);
-					
+
 				}
 				break;
 			}
 			sibling = sibling.getNextSibling();
 		}
 	}
-	
+
 	/**
 	 * extract the notes that are not among the code (optional)
 	 * @param div
@@ -304,7 +308,7 @@ public class DIVElement {
 	/**
 	 * extract sub header elements including parentElements, childElements, and
 	 * attributes
-	 * 
+	 *
 	 * @param div
 	 */
 	public void extractSubHeaderElement(Element div) {
@@ -329,7 +333,7 @@ public class DIVElement {
 	}
 
 	/**
-	 * extract parent elements 
+	 * extract parent elements
 	 * @param node
 	 */
 	public void extractParentElements(Node node) {
@@ -348,11 +352,11 @@ public class DIVElement {
 				}
 				break;
 			}
-			
+
 			sibling = sibling.getNextSibling();
 		}
 	}
-	
+
 	/**
 	 * extract the attributes from the Attributes table
 	 * @param node
@@ -374,9 +378,9 @@ public class DIVElement {
 						}
 						break;
 					}
-				
+
 					else{  //if there is note right before the attributes table, reset the index
-						index = 0; 
+						index = 0;
 					}
 
 				}
@@ -387,7 +391,7 @@ public class DIVElement {
 			sibling = sibling.getNextSibling();
 		}
 	}
-	
+
 	public void extractEnumerations(Node node){
 		Node sibling = node.getNextSibling();
 		int index = 0;
@@ -405,9 +409,9 @@ public class DIVElement {
 						}
 						break;
 					}
-				
+
 					else{  //if there is note right before the enumerations table, reset the index
-						index = 0; 
+						index = 0;
 					}
 
 				}
@@ -418,7 +422,7 @@ public class DIVElement {
 			sibling = sibling.getNextSibling();
 		}
 	}
-	
+
 	public void processEnumerationsRow(Node node){
 		if(node.getNodeType() == Node.ELEMENT_NODE){
 			Element e = (Element) node;
@@ -429,9 +433,9 @@ public class DIVElement {
 				addEleToEnums(key, value);
 			}
 		}
-		
+
 	}
-	
+
 	public void processSubElementsRow(Node node){
 		if(node.getNodeType() == Node.ELEMENT_NODE){
 			Element e = (Element) node;
@@ -447,7 +451,7 @@ public class DIVElement {
 				a.setRequired(trimNewLine(tbs.item(2).getTextContent()).equals("Yes")? true: false);
 				a.setDescription(trimNewLine(tbs.item(3).getTextContent()));
 			}
-			
+
 			for(int i=4; i<tbs.getLength(); i++){
 				String newS = trimNewLine(tbs.item(i).getTextContent());
 				boolean b1 = processSubElementsMinLength(a, newS);
@@ -456,7 +460,7 @@ public class DIVElement {
 				boolean b4 = processSubElementsValidValues(a, newS);
 				boolean b5 = processSubElementsNotes(a, newS);
 				list[i] = b1||b2||b3||b4||b5;
-				
+
 			}
 			for(int i=0; i<list.length; i++){
 				if(!list[i] ){
@@ -471,7 +475,7 @@ public class DIVElement {
 			addEleToSubElements(a);
 		}
 	}
-	
+
 	public boolean processSubElementsMinLength(Attribute a, String raw){
 		Pattern p = Pattern.compile("minLength = (.*)\\t");
 		Matcher m = p.matcher(raw);
@@ -481,7 +485,7 @@ public class DIVElement {
 		}
 		return false;
 	}
-	
+
 	public boolean processSubElementsMaxLength(Attribute a, String raw){
 		Pattern p = Pattern.compile("maxLength = (.*)");
 		Matcher m = p.matcher(raw);
@@ -492,7 +496,7 @@ public class DIVElement {
 		}
 		return false;
 	}
-	
+
 	public boolean processSubElementsTotalDigits(Attribute a, String raw){
 		Pattern p = Pattern.compile("totalDigits = (.*)");
 		Matcher m = p.matcher(raw);
@@ -502,8 +506,8 @@ public class DIVElement {
 		}
 		return false;
 	}
-	
-	
+
+
 	public boolean processSubElementsValidValues(Attribute a, String raw){
 		Pattern p = Pattern.compile("Valid Values = (.*)(\\t|)");
 		Matcher m = p.matcher(raw);
@@ -513,7 +517,7 @@ public class DIVElement {
 		}
 		return false;
 	}
-	
+
 	public boolean processSubElementsNotes(Attribute a, String raw){
 		Pattern p = Pattern.compile("Note: (.*)");
 		Matcher m = p.matcher(raw);
@@ -554,23 +558,23 @@ public class DIVElement {
 			sibling = sibling.getNextSibling();
 		}
 	}
-	
 
-	
+
+
 	private String formatChildElementsOption(String s) {
-	
+
 		return trimWhiteSpace(s).replaceAll(":.*", "");
 	}
-	
+
 	private void formatTypes(String s){
 		String [] entries = s.split(";");
-		
+
 		for (String entry: entries){
 			String key = entry.replaceAll(" = .*", "");
 			String value = entry.replaceAll(".* = ", "");
 			this.addEleToAttrs(key, value);
 		}
-	
+
 	}
 
 	private String trimWhiteSpace(String raw) {
@@ -580,13 +584,13 @@ public class DIVElement {
 	private String trimNewLine(String raw) {
 		return raw.replaceAll("\\n", "");
 	}
-	
+
 	private boolean stopForDescrip(String match){
 		Pattern p = Pattern.compile(".* = .*");
 		Matcher m = p.matcher(match);
 		return m.find();
 	}
-	
+
 	private boolean beforeTrue(int index, boolean[] list){
 		int i = index+1;
 		while(i<list.length){
@@ -597,7 +601,7 @@ public class DIVElement {
 		}
 		return false;
 	}
-	
+
 	public void generateElementDocForJava(String dirAddress){
 
 		// data extracted from DIV element
@@ -605,12 +609,12 @@ public class DIVElement {
 		dx.extractData(this);
 		dx.createData();
 		String payLoad = dx.getData();
-		
+
 		// finding parent and appending comments now
 		for(String parent : this.getParentElements()){
 			FileLocater fl = new FileLocater();
 			fl.locate(parent, dirAddress);
-			if(!(fl.getResult() == null)){	
+			if(!(fl.getResult() == null)){
 				for(String fileAdd : fl.getResult()){
 					StringLocaterForJava sl = new StringLocaterForJava(fileAdd);
 					sl.findLocations(this.getEleName().toLowerCase());
@@ -621,16 +625,41 @@ public class DIVElement {
 						new ContentCombiner(sl.getLocations(), new LineMarkerForJava()).combine(new File(fileAdd), payLoad);
 					}
 				}
-			}	
+			}
 		}
 	}
-	
+
+	public void generateElementDocForDotNet (String address){
+		DataExtracterForDotNet dx = new DataExtracterForDotNet();
+		dx.extractData(this);
+		dx.createData();
+		String payLoad = dx.getData();
+
+
+		// finding parent and appending commments now
+		for(String filename : DocGeneratorForDotNet.getFilenames()){
+			FileLocater fl = new FileLocater();
+			fl.locate(filename, address);
+			if(fl.getResult() != null){
+				for(String fileAdd : fl.getResult()){
+					StringLocatorForDotNet sl = new StringLocatorForDotNet(fileAdd);
+						sl.findLocations(this.getEleName().toLowerCase());
+						//System.out.println(fileAdd);
+						if(!sl.getLocations().isEmpty()){
+							System.out.println("Element : " + this.getEleName() + " updated comments at : " + sl.getLocations().size() + "for file : " + fileAdd);
+							new ContentCombiner(sl.getLocations(), new LineMarkerForDotNet()).combine(new File(fileAdd), payLoad);
+						}
+					}
+			}
+		}
+	}
+
 	//finding enumeration file types and appending enumeration over it
-	public void generateEnumDocForJava(String dirAddress){ 
+	public void generateEnumDocForJava(String dirAddress){
 		for(Entry<String, String> e : this.getEnumerations().entrySet()){
 			FileLocater fenum = new FileLocater();
 			fenum.locate("typeenum", dirAddress);
-			if(!(fenum.getResult() == null)){	
+			if(!(fenum.getResult() == null)){
 				for(String fileAddenum : fenum.getResult()){
 					StringLocaterForJava senum = new StringLocaterForJava(fileAddenum);
 					senum.findLocationsForEnum(e.getKey());
@@ -643,9 +672,37 @@ public class DIVElement {
 						System.out.println("Enumeration : " + e.getKey() + " updated comments at : " + senum.getLocations().size() + "for file : " + fileAddenum);
 						new ContentCombiner(senum.getLocations(), new LineMarkerForJava()).combine(new File(fileAddenum), enumData);
 					}
-				}	
+				}
 			}
 		}
 	}
+	//finding enumeration file types and appending enumeration over it
+//	public void generateEnumDocForDotNet(String dirAddress){
+//		for(String filename : DocGeneratorForDotNet.getFilenames()){
+//			FileLocater fenum = new FileLocater();
+//			fenum.locate(filename, dirAddress);
+//			ArrayList<String> keys = new ArrayList<String>();
+//			for(Entry<String, String> e : this.getEnumerations().entrySet()){
+//				keys.add(e.getKey());
+//			}
+//			if(!(fenum.getResult() == null)){
+//				for(String fileAddenum : fenum.getResult()){
+//					StringLocatorForDotNet senum = new StringLocatorForDotNet(fileAddenum);
+//					senum.findLocationsForEnum(e.getKey());
+//					DataExtracterForDotNet de = new DataExtracterForDotNet();
+//					de.extractDataForEnum(e.getValue());
+//					de.createData();
+//					String enumData = de.getData();
+//					//System.out.println(fileAdd);
+//					if(!senum.getLocations().isEmpty()){
+//						System.out.println("Enumeration : " + e.getKey() + " updated comments at : " + senum.getLocations().size() + "for file : " + fileAddenum);
+//						new ContentCombiner(senum.getLocations(), new LineMarkerForDotNet()).combine(new File(fileAddenum), enumData);
+//					}
+//				}
+//			}
+//			}
+//		}
+//	}
+
 
 }

@@ -11,7 +11,7 @@ import combiner.LineMarkerForJava;
 import extracter.DataExtracterForJava;
 
 public class Attribute {
-	
+
 	private String name;
 	private String type;
 	private boolean required;
@@ -23,7 +23,7 @@ public class Attribute {
 	private String note;
 	private String extra;
 	private int nchanges = 0;
-	
+
 	public Attribute(){
 		name = "";
 		type = "";
@@ -68,7 +68,7 @@ public class Attribute {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
+
 	public void appendDescription(String description){
 		this.description += description;
 	}
@@ -104,7 +104,7 @@ public class Attribute {
 	public void setValidValues(String validValues) {
 		this.validValues = validValues;
 	}
-	
+
 	public String getNote() {
 		return note;
 	}
@@ -120,11 +120,11 @@ public class Attribute {
 	public void setExtra(String extra) {
 		this.extra = extra;
 	}
-	
+
 	public void appendExtra(String extra){
 		this.extra+=extra;
 	}
-	
+
 	public void setNChanges(int n){
 		this.nchanges = n;
 	}
@@ -137,17 +137,17 @@ public class Attribute {
 				+ totalDigits + ", validValues=" + validValues + ", note="
 				+ note + ", extra=" + extra + "]";
 	}
-	
-	
+
+
 	public void generateAttributesDocForJava(DIVElement ele, String dirAddress){
-		
+
 		DataExtracterForJava da = new DataExtracterForJava();
 		da.extractDataForAttr(this);
 		da.createData();
 		String Attrdata = da.getData();
 		FileLocater fattr = new FileLocater();
 		fattr.locate(ele.getEleName().toLowerCase(), dirAddress);
-		if(!(fattr.getResult() == null)){	
+		if(!(fattr.getResult() == null)){
 			for(String fileAddattr : fattr.getResult()){
 				if(fileAddattr.contains(".java")){
 					StringLocaterForJava sattr = new StringLocaterForJava(fileAddattr);
@@ -169,6 +169,6 @@ public class Attribute {
 
 
 
-	
+
 
 }
