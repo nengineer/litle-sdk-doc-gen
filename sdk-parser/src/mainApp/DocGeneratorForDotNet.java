@@ -32,7 +32,7 @@ public class DocGeneratorForDotNet {
 					first.generateElementDocForDotNet(dirAddress);
 
 					// processing Enumeration of the Element
-					//first.generateEnumDocForDotNet(dirAddress);
+					first.generateEnumDocForDotNet(dirAddress);
 
 				}
 			}

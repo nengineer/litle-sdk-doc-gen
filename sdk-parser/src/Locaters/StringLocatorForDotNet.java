@@ -37,7 +37,7 @@ public class StringLocatorForDotNet implements StringLocater {
 					Pattern p = Pattern.compile("public .*" + "\\b" + key + "\\b");
 					Matcher m = p.matcher(currentLine.toLowerCase());
 					if( m.find()){
-						sTemp.getLocations().add(lineNum);
+						sTemp.addToLocations(lineNum);
 					}
 				}
 				reader.close();
@@ -47,7 +47,7 @@ public class StringLocatorForDotNet implements StringLocater {
 		}
 	}
 
-	public void findLocationsForEnum(String key){
+	public void findLocationsForEnum(String key, ArrayList<String> keys){
 
 		StringLocatorForDotNet sTemp = this;
 
@@ -56,35 +56,76 @@ public class StringLocatorForDotNet implements StringLocater {
 		if(temp.canRead()){
 			try {
 				BufferedReader reader = new BufferedReader(new FileReader(temp));
-				int lineNum = 0;
 				String currentLine;
 				boolean lock = false;
+				int lineNum = 0;
+				int startLine = -1, endLine = -1;
+				String block = "";
 				while((currentLine = reader.readLine()) != null){
-					lineNum++;
+				    lineNum ++;
 
 					Pattern p = Pattern.compile("public enum .*");
 					Matcher m = p.matcher(currentLine.toLowerCase());
-					Pattern p1 = Pattern.compile("\\b"+key+"\\b"+",");
+					Pattern p1 = Pattern.compile("}");
 					Matcher m1 = p1.matcher(currentLine.toLowerCase());
 					if( m.find() && !lock){
+					    startLine = lineNum;
 						lock = true;
 					}
 					else if(m1.find() && lock){
-						sTemp.getLocations().add(lineNum);
-						lock = false;
+
+		                if(containsAll(block, keys)){
+		                    endLine = lineNum;
+	                        break;
+		                }
+		                else{
+		                    startLine = -1;
+		                    endLine = -1;
+		                    block = "";
+		                }
+		                lock= false;
+
+					}
+					if(lock){
+					    block += currentLine;
 					}
 				}
 				reader.close();
+    			reader = new BufferedReader(new FileReader(temp));
+    			for(lineNum = 1; lineNum < startLine; lineNum++){
+    			    reader.readLine();
+    			}
+    			for(lineNum = startLine; lineNum < endLine; lineNum++){
+    			    currentLine = reader.readLine();
+                    Pattern p = Pattern.compile("\\b"+key.toLowerCase().replace("\\s","")+"\\b"+",");
+                    Matcher m = p.matcher(currentLine.toLowerCase());
+                    if(m.find()){
+                        sTemp.addToLocations(lineNum);
+                    }
+    			}
+    			reader.close();
 			}catch(Exception e){
 				e.printStackTrace();
 			}
 		}
 	}
 
+	public boolean containsAll(String block, ArrayList<String> keys){
+	    for(String key: keys){
+	        if(!block.contains(key)){
+	            return false;
+	        }
+	    }
+	    return true;
+	}
 
 	public List<Integer> getLocations() {
 		// TODO Auto-generated method stub
 		return locations;
+	}
+
+	public void addToLocations(int loc){
+	    locations.add(loc);
 	}
 
 	public String getFileAddress() {

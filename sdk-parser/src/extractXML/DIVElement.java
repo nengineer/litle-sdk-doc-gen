@@ -677,32 +677,33 @@ public class DIVElement {
 		}
 	}
 	//finding enumeration file types and appending enumeration over it
-//	public void generateEnumDocForDotNet(String dirAddress){
-//		for(String filename : DocGeneratorForDotNet.getFilenames()){
-//			FileLocater fenum = new FileLocater();
-//			fenum.locate(filename, dirAddress);
-//			ArrayList<String> keys = new ArrayList<String>();
-//			for(Entry<String, String> e : this.getEnumerations().entrySet()){
-//				keys.add(e.getKey());
-//			}
-//			if(!(fenum.getResult() == null)){
-//				for(String fileAddenum : fenum.getResult()){
-//					StringLocatorForDotNet senum = new StringLocatorForDotNet(fileAddenum);
-//					senum.findLocationsForEnum(e.getKey());
-//					DataExtracterForDotNet de = new DataExtracterForDotNet();
-//					de.extractDataForEnum(e.getValue());
-//					de.createData();
-//					String enumData = de.getData();
-//					//System.out.println(fileAdd);
-//					if(!senum.getLocations().isEmpty()){
-//						System.out.println("Enumeration : " + e.getKey() + " updated comments at : " + senum.getLocations().size() + "for file : " + fileAddenum);
-//						new ContentCombiner(senum.getLocations(), new LineMarkerForDotNet()).combine(new File(fileAddenum), enumData);
-//					}
-//				}
-//			}
-//			}
-//		}
-//	}
+	public void generateEnumDocForDotNet(String dirAddress){
+		for(String filename : DocGeneratorForDotNet.getFilenames()){
+			FileLocater fenum = new FileLocater();
+			fenum.locate(filename, dirAddress);
+			ArrayList<String> keys = new ArrayList<String>();
+			for(Entry<String, String> e : this.getEnumerations().entrySet()){
+				keys.add(e.getKey());
+			}
+			if(fenum.getResult() != null){
+				for(String fileAddenum : fenum.getResult()){
+					StringLocatorForDotNet senum = new StringLocatorForDotNet(fileAddenum);
+					for(Entry<String, String> e: this.getEnumerations().entrySet()){
+
+					    senum.findLocationsForEnum(e.getKey(), keys);
+					    if(!senum.getLocations().isEmpty()){
+    					    DataExtracterForDotNet de = new DataExtracterForDotNet();
+    					    de.extractDataForEnum(e.getValue());
+    					    de.createData();
+    					    String enumData = de.getData();
+    						System.out.println("Enumeration : " + e.getKey() + " updated comments at : " + senum.getLocations().size() + "for file : " + fileAddenum);
+    						new ContentCombiner(senum.getLocations(), new LineMarkerForDotNet()).combine(new File(fileAddenum), enumData);
+    					}
+					}
+				}
+			}
+		}
+	}
 
 
 }
