@@ -242,16 +242,32 @@ public class DIVElement {
 	 */
 	public void extractDescription(Node node) {
 		Node sibling = node.getNextSibling();
+		boolean hitDescrip = false;
 		while (sibling != null ) {
 			if (sibling.getNodeType() == Node.ELEMENT_NODE) {
 				Element se = (Element) sibling;
-				if(se.getTagName().equals(XMLLookUpStrings.BP_BODY) && !stopForDescrip(se.getTextContent())){
-					String s1 = trimNewLine(se.getTextContent());
-					appendDescrip(s1);
+				if(se.getTagName().equals(XMLLookUpStrings.BP_BODY)){
+				    String s1 = trimNewLine(se.getTextContent());
+				   if(!stopForDescrip(s1)){
+				       appendDescrip(s1);
+				       hitDescrip = true;
+				   }
+				   else{
+				       break;
+				   }
 				}
 				else{
-					break;
+				    if(hitDescrip){
+				        break;
+				    }
 				}
+
+
+
+//				}
+//				else{
+//					break;
+//				}
 			}
 			sibling = sibling.getNextSibling();
 		}
@@ -586,9 +602,11 @@ public class DIVElement {
 	}
 
 	private boolean stopForDescrip(String match){
-		Pattern p = Pattern.compile(".* = .*");
-		Matcher m = p.matcher(match);
-		return m.find();
+//		Pattern p = Pattern.compile(".* = .*");
+//		Matcher m = p.matcher(match);
+
+
+		return match.startsWith("Type = ");
 	}
 
 	private boolean beforeTrue(int index, boolean[] list){
