@@ -8,6 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 
@@ -117,6 +118,35 @@ public class ContentCombiner {
     		e.printStackTrace();
     	}
 
+    }
+    
+    public void appendContent(File file, Map<Integer, List<String>> appendmap){
+        try{
+            int count = 0;
+            
+            FileWriter filewriter = new FileWriter(file);
+            BufferedWriter writer = new BufferedWriter(filewriter);
+            while(count < getDataList().size()){
+                writer.write(getDataList().get(count) + "\n");
+                count++;
+              
+                if(appendmap.containsKey(count+1)){
+                    String payload = "";
+                    for(String s : appendmap.get(count)){
+                        payload = payload + s;
+                    }
+                    payload = insertMargin(payload,getMargin(getDataList().get(count)));
+                    writer.write(payload + "\n");
+                }
+
+            }
+            writer.close();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        
+        
     }
     
     public List<Integer> getLocations() {
