@@ -681,15 +681,16 @@ public class DIVElement {
 		for(String filename : DocGeneratorForDotNet.getFilenames()){
 			FileLocater fenum = new FileLocater();
 			fenum.locate(filename, dirAddress);
-			ArrayList<String> keys = new ArrayList<String>();
-			for(Entry<String, String> e : this.getEnumerations().entrySet()){
-				keys.add(e.getKey());
-			}
-			if(fenum.getResult() != null){
-				for(String fileAddenum : fenum.getResult()){
-					StringLocatorForDotNet senum = new StringLocatorForDotNet(fileAddenum);
-					for(Entry<String, String> e: this.getEnumerations().entrySet()){
 
+			if(fenum.getResult() != null){
+			    ArrayList<String> keys = new ArrayList<String>();
+                for(Entry<String, String> e : this.getEnumerations().entrySet()){
+                    keys.add(e.getKey());
+                }
+				for(String fileAddenum : fenum.getResult()){
+
+					for(Entry<String, String> e: this.getEnumerations().entrySet()){
+					    StringLocatorForDotNet senum = new StringLocatorForDotNet(fileAddenum);
 					    senum.findLocationsForEnum(e.getKey(), keys);
 					    if(!senum.getLocations().isEmpty()){
     					    DataExtracterForDotNet de = new DataExtracterForDotNet();
