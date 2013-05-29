@@ -10,22 +10,18 @@ import java.util.regex.Pattern;
 
 public class StringLocatorForDotNet implements StringLocater {
 
-	List<Integer> locations = new ArrayList<Integer>();
+	List<Integer> locations;
 	String fileAddress;
-	//String keyword;
 
 	public StringLocatorForDotNet(String add){
+	    this.locations = new ArrayList<Integer>();
 		this.fileAddress = add;
-		//this.keyword = key;
 	}
 
 	@Override
     public void findLocations(String key){
 
-		StringLocatorForDotNet sTemp = this;
-
-		File temp = new File(sTemp.getFileAddress());
-		//checking for permissions
+		File temp = new File(this.getFileAddress());
 		if(temp.canRead()){
 			try {
 				BufferedReader reader = new BufferedReader(new FileReader(temp));
@@ -33,11 +29,10 @@ public class StringLocatorForDotNet implements StringLocater {
 				String currentLine;
 				while((currentLine = reader.readLine()) != null){
 					lineNum++;
-
 					Pattern p = Pattern.compile("public .*" + "\\b" + key + "\\b");
 					Matcher m = p.matcher(currentLine.toLowerCase());
 					if( m.find()){
-						sTemp.addToLocations(lineNum);
+						this.addToLocations(lineNum);
 					}
 				}
 				reader.close();
@@ -49,10 +44,7 @@ public class StringLocatorForDotNet implements StringLocater {
 
 	public void findLocationsForEnum(String key, ArrayList<String> keys){
 
-		StringLocatorForDotNet sTemp = this;
-
-		File temp = new File(sTemp.getFileAddress());
-		//checking for permissions
+		File temp = new File(this.getFileAddress());
 		if(temp.canRead()){
 			try {
 				BufferedReader reader = new BufferedReader(new FileReader(temp));
@@ -63,7 +55,6 @@ public class StringLocatorForDotNet implements StringLocater {
 				String block = "";
 				while((currentLine = reader.readLine()) != null){
 				    lineNum ++;
-
 					Pattern p = Pattern.compile("public enum .*");
 					Matcher m = p.matcher(currentLine.toLowerCase());
 					Pattern p1 = Pattern.compile("}");
@@ -73,7 +64,6 @@ public class StringLocatorForDotNet implements StringLocater {
 						lock = true;
 					}
 					else if(m1.find() && lock){
-
 		                if(containsAll(block, keys)){
 		                    endLine = lineNum;
 	                        break;
@@ -84,7 +74,6 @@ public class StringLocatorForDotNet implements StringLocater {
 		                    block = "";
 		                }
 		                lock= false;
-
 					}
 					if(lock){
 					    block += currentLine;
@@ -95,12 +84,18 @@ public class StringLocatorForDotNet implements StringLocater {
     			for(lineNum = 1; lineNum < startLine; lineNum++){
     			    reader.readLine();
     			}
+
     			for(lineNum = startLine; lineNum < endLine; lineNum++){
-    			    currentLine = reader.readLine();
-                    Pattern p = Pattern.compile("\\b"+key.toLowerCase().replace("\\s","")+"\\b"+",");
-                    Matcher m = p.matcher(currentLine.toLowerCase());
-                    if(m.find()){
-                        sTemp.addToLocations(lineNum);
+                    currentLine = reader.readLine();
+                    Pattern p1 = Pattern.compile("\\b"+key.toLowerCase()+"\\b"+",");
+                    Matcher m1 = p1.matcher(currentLine.toLowerCase());
+                    Pattern p2 = Pattern.compile("\\[System\\.Xml\\.Serialization\\.XmlEnumAttribute\\(\""+key+"\"\\)\\]");
+                    Matcher m2 = p2.matcher(currentLine);
+                    if(m1.find() ){
+                        this.addToLocations(lineNum);
+                    }
+                    else if(m2.find()){
+                        this.addToLocations(lineNum);
                     }
     			}
     			reader.close();
@@ -120,16 +115,13 @@ public class StringLocatorForDotNet implements StringLocater {
 	}
 
 	public List<Integer> getLocations() {
-		// TODO Auto-generated method stub
 		return locations;
 	}
-
 	public void addToLocations(int loc){
 	    locations.add(loc);
 	}
 
 	public String getFileAddress() {
-		// TODO Auto-generated method stub
 		return fileAddress;
 	}
 

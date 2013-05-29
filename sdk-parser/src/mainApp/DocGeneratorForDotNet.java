@@ -18,7 +18,7 @@ import extractXML.ReadXMLFile;
 
 public class DocGeneratorForDotNet {
 
-
+//{"XmlFields.cs"};
 
 	private final static String[] filenames = {"XmlRequestFields.cs", "XmlResponseFields.cs", "XmlFields.cs"};
 
@@ -44,6 +44,9 @@ public class DocGeneratorForDotNet {
 					first.generateElementDocForDotNet(dirAddress);
 
 					// processing Enumeration of the Element
+					if(!first.getEnumerations().isEmpty()){
+					    System.out.println(first.getEnumerations());
+					}
 					first.generateEnumDocForDotNet(dirAddress);
 
 				}

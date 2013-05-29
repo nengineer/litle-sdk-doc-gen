@@ -24,6 +24,7 @@ import combiner.LineMarkerForJava;
 
 import extracter.DataExtracterForDotNet;
 import extracter.DataExtracterForJava;
+import formatter.StringFormatter;
 
 
 public class DIVElement {
@@ -703,13 +704,15 @@ public class DIVElement {
 			if(fenum.getResult() != null){
 			    ArrayList<String> keys = new ArrayList<String>();
                 for(Entry<String, String> e : this.getEnumerations().entrySet()){
-                    keys.add(e.getKey());
+                    keys.add(new StringFormatter().trimParenForEnum(e.getKey()));
                 }
 				for(String fileAddenum : fenum.getResult()){
 
 					for(Entry<String, String> e: this.getEnumerations().entrySet()){
 					    StringLocatorForDotNet senum = new StringLocatorForDotNet(fileAddenum);
-					    senum.findLocationsForEnum(e.getKey(), keys);
+
+				        String key = new StringFormatter().trimParenForEnum(e.getKey());
+					    senum.findLocationsForEnum(key, keys);
 					    if(!senum.getLocations().isEmpty()){
     					    DataExtracterForDotNet de = new DataExtracterForDotNet();
     					    de.extractDataForEnum(e.getValue());
