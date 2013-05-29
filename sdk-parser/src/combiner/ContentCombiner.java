@@ -48,8 +48,8 @@ public class ContentCombiner {
     		List<Integer> tl = new ArrayList<Integer>();
     		LineMarker lm = new LineMarkerForRuby();
     		
-    		tl.add(4);
     		tl.add(6);
+    		tl.add(10);
     		
     		//new ContentCombiner(tl, lm).combine(file, data1);
     		
@@ -67,9 +67,9 @@ public class ContentCombiner {
     		
     		Map<Integer, List<String>> testmap = new HashMap<Integer, List<String>>();
     		
-    		testmap.put(3, list1);
+    		testmap.put(5, list1);
     		
-    		testmap.put(5, list2);
+    		testmap.put(9, list2);
     		ContentCombiner cr = new ContentCombiner(tl,lm);
     		cr.removeUnchangedDocs(file);
     		
@@ -77,12 +77,12 @@ public class ContentCombiner {
     		    System.out.println(i);
     		}
     		
-    		ContentCombiner cnew = new ContentCombiner(tl, lm);
-    		
-    		cnew.storeContent(file);
-     		
-    		cnew.appendContent(file, testmap);
-    		
+//    		ContentCombiner cnew = new ContentCombiner(tl, lm);
+//    		
+//    		cnew.storeContent(file);
+//     		
+//    		cnew.appendContent(file, testmap);
+////    		
     		
 //    		i am first line
 //    		i am second line
@@ -179,8 +179,12 @@ public class ContentCombiner {
                     payload = insertMargin(payload,getMargin(getDataList().get(count)));
                     writer.write(payload + "\n");
                 }
-                writer.write(getDataList().get(count) + "\n");
-                count++;
+                if(getFlaggedLocations().contains(count)){
+                    count++;
+                }else{
+                    writer.write(getDataList().get(count)+ "\n");
+                    count++;
+                }
             }
             writer.close();
         }catch(Exception e){
@@ -239,14 +243,9 @@ public class ContentCombiner {
     }
     
     public void processContent(){
-        if(!this.getLocations().isEmpty()){
-            for(int location : getLocations()){
-                markLines(location-1);
-            }
-        }else{
-            markLines(0);
+        for(int location : getLocations()){
+            markLines(location-1);
         }
-
     }
     
 	public void markLines(int location){

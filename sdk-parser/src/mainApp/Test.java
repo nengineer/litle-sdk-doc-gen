@@ -37,7 +37,26 @@ public class Test {
 			
 			testlist.add("singh");
 			
-			System.out.println(testlist.indexOf("singh"));
+			testlist.add("#1");
+			testlist.add("#2");
+			testlist.add("#3");
+			testlist.add("#4");
+			testlist.add("#5");
+			testlist.add("#6");
+			
+			testlist.add("the end");
+			
+			Test t = new Test();
+			
+			List<Integer> result = new ArrayList<Integer>();
+			
+			result = t.markLines(7, testlist);
+			
+			for(int i : result){
+			    System.out.println(i + " : " + testlist.get(i));
+			}
+			
+
 			
 			
 //			String fileAdd = "/usr/local/litle-home/vchouhan/Desktop/testarena/testarena1/testarena2/litle-sdk-for-java/generated/com/litle/sdk/generate/EnhancedAuthResponse.java";
@@ -79,4 +98,23 @@ public class Test {
 //			ctest.showContent(new File(fileAdd));
 			
 		}
+		
+		
+		public List<Integer> markLines(int location, List<String> list){
+	        
+		    List<Integer> result = new ArrayList<Integer>();
+		    int i = location-1;
+	        //System.out.println(c.getDataList().get(i));
+	        while(i>=0 && list.get(i).trim().isEmpty()){
+	            i--;
+	        }
+	        if(i>=0 && list.get(i).trim().startsWith("#")){
+	            while(i>0 && list.get(i).trim().startsWith("#")){
+	                result.add(i);
+	                i--;
+	            }
+	            //result.add(i);
+	        }
+	        return result;
+	    }
 }

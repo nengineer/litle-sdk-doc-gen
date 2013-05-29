@@ -56,10 +56,6 @@ public class DocGeneretorForRuby {
             
             for(String add : fnew.getResult()){
                 if(new File(add).canWrite()){
-                    System.out.println("processing old comments from file : " + add);
-                    new ContentCombiner(
-                            new ArrayList<Integer>(), 
-                            new LineMarkerForJava()).removeUnchangedDocs(new File(add));
                     System.out.println("processing file : " + add);
                     ContentCombiner cnew = new ContentCombiner(new ArrayList<Integer>(), new LineMarkerForJava());
                     cnew.storeContent(new File(add));
@@ -86,6 +82,8 @@ public class DocGeneretorForRuby {
                                         
                                 }
                             }
+                            cnew.processContent();
+                            //cnew.removeFlagged(new File(add));
                             cnew.appendContent(new File(add), mymap);
                         }
 //                        for(Attribute a : e.getSubElements()){
@@ -99,6 +97,8 @@ public class DocGeneretorForRuby {
 //                            
 //                        }
                     }
+                    
+                    System.out.println("processing completed....");
                 }
             }
             
