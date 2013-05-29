@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +35,7 @@ public class ContentCombiner {
     	try{
     		
     		//String data = "This new content will append to the middle of the file\n";
-    		String data1 = "i m getting problems";
+    		String data1 = "catch me if you can";
     		
     		File file =new File("/usr/local/litle-home/vchouhan/Desktop/project/test1/text.txt");
     		
@@ -45,12 +46,55 @@ public class ContentCombiner {
     		}
     		
     		List<Integer> tl = new ArrayList<Integer>();
-    		LineMarker lm = new LineMarkerForJava();
+    		LineMarker lm = new LineMarkerForRuby();
     		
-    		tl.add(5);
+    		tl.add(6);
     		tl.add(10);
     		
-    		new ContentCombiner(tl, lm).combine(file, data1);
+    		//new ContentCombiner(tl, lm).combine(file, data1);
+    		
+    		List<String> list1 = new ArrayList<String>();
+    		
+    		list1.add("#updated_first string added");
+    		
+    		list1.add("#updated_second string added");
+    		
+    		List<String> list2 = new ArrayList<String>();
+            
+            list2.add("#updated_third string added");
+            
+            list2.add("#updated_fourth string added");
+    		
+    		Map<Integer, List<String>> testmap = new HashMap<Integer, List<String>>();
+    		
+    		testmap.put(5, list1);
+    		
+    		testmap.put(9, list2);
+    		ContentCombiner cr = new ContentCombiner(tl,lm);
+    		cr.removeUnchangedDocs(file);
+    		
+    		for(int i : cr.getFlaggedLocations()){
+    		    System.out.println(i);
+    		}
+    		
+//    		ContentCombiner cnew = new ContentCombiner(tl, lm);
+//    		
+//    		cnew.storeContent(file);
+//     		
+//    		cnew.appendContent(file, testmap);
+////    		
+    		
+//    		i am first line
+//    		i am second line
+//    		i am third line
+//    		i am fourth line
+//    		i am fifth line
+//    		i am sixth line
+//    		i am seventh line
+//    		i am eight line
+//    		i am nine line
+//    		i am tenth line
+    		
     		
     		//new ContentCombiner(7).combine(file, data1); 
     
@@ -127,18 +171,20 @@ public class ContentCombiner {
             FileWriter filewriter = new FileWriter(file);
             BufferedWriter writer = new BufferedWriter(filewriter);
             while(count < getDataList().size()){
-                writer.write(getDataList().get(count) + "\n");
-                count++;
-              
-                if(appendmap.containsKey(count+1)){
+                if(appendmap.containsKey(count)){
                     String payload = "";
                     for(String s : appendmap.get(count)){
-                        payload = payload + s;
+                        payload = payload + s + "\n";
                     }
                     payload = insertMargin(payload,getMargin(getDataList().get(count)));
                     writer.write(payload + "\n");
                 }
-
+                if(getFlaggedLocations().contains(count)){
+                    count++;
+                }else{
+                    writer.write(getDataList().get(count)+ "\n");
+                    count++;
+                }
             }
             writer.close();
         }catch(Exception e){
@@ -197,9 +243,9 @@ public class ContentCombiner {
     }
     
     public void processContent(){
-    	for(int location : getLocations()){
-    		markLines(location-1);
-    	}
+        for(int location : getLocations()){
+            markLines(location-1);
+        }
     }
     
 	public void markLines(int location){

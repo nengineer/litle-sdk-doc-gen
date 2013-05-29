@@ -26,8 +26,6 @@ import extractXML.Attribute;
 import extractXML.DIVElement;
 import extractXML.ReadXMLFile;
 
-import extracter.Employee;
-
 public class DocGenerator {
 
 	public static void main(String[] args){

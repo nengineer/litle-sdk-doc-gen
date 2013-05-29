@@ -65,21 +65,25 @@ public class DocGeneretorForRuby {
                             dx.extractData(e);
                             dx.createData();
                             for(String s : cnew.getDataList()){
-                                if(s.toLowerCase().contains(e.getEleName().toLowerCase())
+                                if(s.toLowerCase().contains(":" +e.getEleName().toLowerCase() + ",")
                                         && s.toLowerCase().contains("_node")){
-                                    if(mymap.containsKey(cnew.getDataList().indexOf(s) + 1)){
+                                    if(mymap.containsKey(cnew.getDataList().indexOf(s))){
                                         List<String> temp = new ArrayList<String>();
-                                        temp = mymap.get(cnew.getDataList().indexOf(s) + 1);
+                                        temp = mymap.get(cnew.getDataList().indexOf(s));
                                         temp.add(dx.getData());
-                                        mymap.put(cnew.getDataList().indexOf(s) + 1,temp);
+                                        mymap.put(cnew.getDataList().indexOf(s),temp);
+                                        cnew.getLocations().add(cnew.getDataList().indexOf(s) + 1);
                                     }else{
                                         List<String> temp = new ArrayList<String>();
                                         temp.add(dx.getData());
-                                        mymap.put(cnew.getDataList().indexOf(s) + 1, temp);
+                                        mymap.put(cnew.getDataList().indexOf(s), temp);
+                                        cnew.getLocations().add(cnew.getDataList().indexOf(s) + 1);
                                     }
                                         
                                 }
                             }
+                            cnew.processContent();
+                            //cnew.removeFlagged(new File(add));
                             cnew.appendContent(new File(add), mymap);
                         }
 //                        for(Attribute a : e.getSubElements()){
@@ -93,6 +97,8 @@ public class DocGeneretorForRuby {
 //                            
 //                        }
                     }
+                    
+                    System.out.println("processing completed....");
                 }
             }
             

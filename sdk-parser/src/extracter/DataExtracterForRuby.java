@@ -139,6 +139,7 @@ public void extractDataForAttr(Attribute a){
         // TODO Auto-generated method stub
         
         //this.setData("/**" + "\n");
+        this.setData("");
         for(String s : this.getDList()){
             this.setData(this.getData() + "# " + s + "\n");
         }       
@@ -159,6 +160,7 @@ public void extractDataForAttr(Attribute a){
     public void createData(String version) {
         // TODO Auto-generated method stub
         //this.setData("/**" + "\n");
+        this.setData("");
         for(String s : this.getDList()){
             this.setData(this.getData() + "# " + s + "\n");
         }       
