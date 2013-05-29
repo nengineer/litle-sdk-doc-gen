@@ -172,14 +172,16 @@ public class DIVElement {
 		this.extractItemName(div);
 		this.extractNotesOptional(div);
 		this.extractSubHeaderElement(div);
-		if(this.eleName.contains(",")){
-			String[] eleNames = this.eleName.split(",");
-			for(String eleName: eleNames){
-				writeToFile(div, out, eleName);
-			}
-		}
-		else{
-			writeToFile(div,out, this.eleName);
+		if(out != null){
+    		if(this.eleName.contains(",")){
+    			String[] eleNames = this.eleName.split(",");
+    			for(String eleName: eleNames){
+    				writeToFile(div, out, eleName);
+    			}
+    		}
+    		else{
+    			writeToFile(div,out, this.eleName);
+    		}
 		}
 
 	}
