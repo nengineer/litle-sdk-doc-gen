@@ -1,7 +1,9 @@
 package extracter;
 
+import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map.Entry;
 
 import extractXML.DIVElement;
@@ -19,19 +21,16 @@ public class DataExtracterForDotNet implements DataExtracter{
 
 	@Override
 	public void extractData(DIVElement div) {
-		// TODO Auto-generated method stub
 		DataExtracterForDotNet dx = this;
 
-		System.out.println(div.getDescrip());
+//		System.out.println(div.getDescrip());
 
 		if(!div.getDescrip().trim().isEmpty()){
 		    dx.addToDList("<summary>");
-			//String[] parts = div.getDescrip().split("\\.");
-			//for(String p : parts){
-			    //if(!p.trim().equals("")){
-			        dx.addToDList(div.getDescrip().trim());
-			    //}
-			//}
+	        for (String s: splitSentences(div.getDescrip().trim())) {
+	          dx.addToDList(s);
+	        }
+
 			dx.addToDList("</summary>");
 		}
 
@@ -142,13 +141,11 @@ public class DataExtracterForDotNet implements DataExtracter{
 	public void extractDataForEnum(String data){
 
 		DataExtracterForDotNet de = this;
-
-		String[] parts = data.split("\\.");
 		de.addToDList("<summary>");
 
-		for(String p : parts){
-			de.addToDList((p.trim()));
-		}
+        for (String s: splitSentences(data)) {
+          de.addToDList(s);
+        }
 		de.addToDList("</summary>");
 
 	}
@@ -168,6 +165,19 @@ public class DataExtracterForDotNet implements DataExtracter{
 			dx.setData(dx.getData()+ "/// " + s + "\n");
 		}
 		dx.setData(dx.getData() + "/// <version>" + version + "</version>");
+	}
+
+	public ArrayList<String> splitSentences(String source){
+        BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
+        iterator.setText(source);
+        ArrayList<String> result = new ArrayList<String>();
+        int start = iterator.first();
+        for (int end = iterator.next();
+            end != BreakIterator.DONE;
+            start = end, end = iterator.next()) {
+          result.add(source.substring(start,end));
+        }
+        return result;
 	}
 
 	public void setData(String d){
