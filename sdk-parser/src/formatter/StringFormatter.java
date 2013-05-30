@@ -29,7 +29,7 @@ public class StringFormatter {
     }
 
     public String trimParenForEnum(String source){
-        return source.replaceAll("\\(.*\\)","");
+        return source.replaceAll("\\(.*\\)","").trim();
     }
 
     public static void main(String[] args){

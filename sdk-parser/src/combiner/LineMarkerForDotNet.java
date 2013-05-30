@@ -5,6 +5,7 @@ import java.util.List;
 public class LineMarkerForDotNet implements LineMarker {
 
     private final static String PatternToMatch = "/// <remarks/>";
+    private final static String CommentPrefix = "///";
 	@Override
 	public void markLines(int location, ContentCombiner c) {
 		List<String> dlist = c.getDataList();
@@ -16,9 +17,13 @@ public class LineMarkerForDotNet implements LineMarker {
 				c.addToFlaggedLocation(i);
 				i--;
 			}
+
 		}
     public String getPatternToMatch() {
         return PatternToMatch;
+    }
+    public static String getCommentprefix() {
+        return CommentPrefix;
     }
 
 }

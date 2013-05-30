@@ -45,9 +45,9 @@ public class DocGeneratorForDotNet {
 
 					// processing Enumeration of the Element
 					if(!first.getEnumerations().isEmpty()){
-					    System.out.println(first.getEnumerations());
+					    first.generateEnumDocForDotNet(dirAddress);
 					}
-					first.generateEnumDocForDotNet(dirAddress);
+
 
 				}
 			}
@@ -69,7 +69,7 @@ public class DocGeneratorForDotNet {
                             BufferedReader reader = new BufferedReader(new FileReader(temp));
                             String currentLine;
                             while((currentLine = reader.readLine()) != null){
-                                if(!currentLine.trim().contains(new LineMarkerForDotNet().getPatternToMatch())){
+                                if(!currentLine.trim().startsWith(LineMarkerForDotNet.getCommentprefix())){
                                     dataList.add(currentLine);
                                 }
                             }
