@@ -139,11 +139,11 @@ public class Attribute {
 	}
 
 
-	public void generateAttributesDocForJava(DIVElement ele, String dirAddress){
+	public void generateAttributesDocForJava(DIVElement ele, String dirAddress, String version){
 
 		DataExtracterForJava da = new DataExtracterForJava();
 		da.extractDataForAttr(this);
-		da.createData();
+		da.createData(version);
 		String Attrdata = da.getData();
 		FileLocater fattr = new FileLocater();
 		fattr.locate(ele.getEleName().toLowerCase(), dirAddress);

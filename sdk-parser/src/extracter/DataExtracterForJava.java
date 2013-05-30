@@ -10,8 +10,8 @@ import formatter.StringFormatter;
 
 public class DataExtracterForJava implements DataExtracter{
 
-	String data;
-	List<String> dataList = new ArrayList<String>();
+	private String data;
+	private List<String> dataList = new ArrayList<String>();
 
 
 
@@ -126,9 +126,9 @@ public class DataExtracterForJava implements DataExtracter{
 		    this.setData(this.getData() + " * " + s + "\n");
 		}
 
-		this.setData(this.getData() + " *@author : sdksupport@litle.com");
+		this.setData(this.getData() + " *@author : sdksupport@litle.com\n");
 
-		this.setData(this.getData() + " *@version : " + version);
+		this.setData(this.getData() + " *@version : " + version + "\n");
 
 		this.setData(this.getData() + " */");
 	}

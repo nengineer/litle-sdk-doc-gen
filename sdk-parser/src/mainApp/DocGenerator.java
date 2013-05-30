@@ -1,112 +1,57 @@
 package mainApp;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
-
-import combiner.ContentCombiner;
-import combiner.LineMarkerForJava;
-
-import Locaters.FileLocater;
-//import Locaters.StringLocater;
-import Locaters.StringLocaterForJava;
-
-import extracter.DataExtracterForJava;
-import extractXML.Attribute;
-import extractXML.DIVElement;
-import extractXML.ReadXMLFile;
 
 public class DocGenerator {
 
-	public static void main(String[] args){
-		new DocGenerator().run("/usr/local/litle-home/vchouhan/Desktop/XML_Ref_elements.xml","/usr/local/litle-home/vchouhan/Desktop/testarena/testarena1/testarena2/litle-sdk-for-java");
-	}
-	
-	public void run(String fileaddress, String dirAddress){
-		
-		try{
-			ReadXMLFile rd = new ReadXMLFile();
-			rd.extractDIVs(fileaddress);
-			
-			
-			// got element list extracted from XML file
-			List<DIVElement> eList = rd.getDIVs();
+    /**
+     * @param args
+     */
+    public static void main(String[] args) {
+        // TODO Auto-generated method stub
+        
+        // XML file address
+        // type of package :: java :: ruby :: dotnet
+        // Package address
+        // version number
+            
+        if(args.length != 4){
+            System.out.println("Please enter following 4 arguments  ::\n " +
+            		"1. XML file address\n " +
+            		"2. Type of sdk(type java for Java-sdk, ruby for Ruby-sdk, dotnet for Dotnet-sdk)\n " +
+            		"3. Package Address\n" +
+            		"4. Version Number");
+        }else if(!new File(args[0]).canRead()){
+            System.out.println("Cannot read the XML File. Please check the permissions to continue...\n");
+        }
+        else if(!new File(args[2]).isDirectory()){
+            System.out.println("Package is not valid");
+        }
+        else if(!new File(args[2]).canWrite()){
+            System.out.println("Permission Denied for the Package : " + args[2]);
+        }
+        else if(!(args[1].toLowerCase().equals("java")
+                ||args[1].toLowerCase().equals("ruby")
+                ||args[1].toLowerCase().equals("dotnet"))){
+            System.out.println("Please enter the valid type of package" +
+            		"(type java for Java-sdk, ruby for Ruby-sdk, dotnet for Dotnet-sdk)");
+        }else{
+            try{
+                Float f = Float.valueOf(args[3]);
+                if(f < 0) throw new Exception(" It cannot be negative");
+            }catch(Exception e){
+                System.out.println("Version number is not valid.\n");
+                System.out.println(e.getMessage());
+            }
+            if(args[1].toLowerCase().equals("java"))
+                new DocGeneratorForJava().run(args[0],args[2],args[3]);
+            else if(args[1].toLowerCase().equals("dotnet"))
+                new DocGeneratorForDotNet().run(args[0], args[2],args[3]);
+            else 
+                new DocGeneretorForRuby().run(args[0], args[2], args[3]);
+            
+        }
+        
+    }
 
-			// cleaning the old auto generated comments from the java package 
-			Map<String, Integer> noChangeMap = new HashMap<String, Integer>();
-			
-			for(DIVElement e : eList){
-			    if(!e.getEleName().trim().isEmpty()){
-			        if(!noChangeMap.containsKey(e.getEleName().toLowerCase()))
-			            noChangeMap.put(e.getEleName().toLowerCase(), 0);
-			        
-			        for(Attribute a : e.getSubElements()){
-		                 if(!noChangeMap.containsKey(a.getName().toLowerCase()))
-		                        noChangeMap.put(a.getName().toLowerCase(), 0);
-			        }
-			    }
-			}
-			
-	         FileLocater ftest = new FileLocater();
-	            
-	         ftest.locate("java", dirAddress + "/generated/com/litle/sdk/generate/");
-	            
-	         for(String fileAdd : ftest.getResult()){
-	             if(new File(fileAdd).canWrite()){
-	                 System.out.println("processing file : " + fileAdd);
-	                 ContentCombiner ctest = new ContentCombiner(new ArrayList<Integer>(), new LineMarkerForJava());
-	                 ctest.storeContent(new File(fileAdd));
-	                 for(String cline : ctest.getDataList()){
-	                     if(cline.trim().startsWith("public")){
-	                         for(Entry<String, Integer> e : noChangeMap.entrySet()){
-	                             if(cline.toLowerCase().contains("set" + e.getKey().toLowerCase() + "(")
-	                                     ||cline.toLowerCase().contains("get" + e.getKey().toLowerCase() + "(")
-	                                     ||cline.toLowerCase().contains("is" + e.getKey().toLowerCase() + "(")){
-	                                 ctest.getLocations().add(ctest.getDataList().indexOf(cline)+1);
-	                                 e.setValue(e.getValue() + ctest.getLocations().size());
-	                             }
-	                         }
-	                     }
-	                 }
-	                 System.out.println(" at " + ctest.getLocations().size() + " number of places");
-	                 ctest.processContent();
-	                 ctest.removeFlagged(new File(fileAdd));
-	             }
-	         }
-	            
-	         for(Entry<String, Integer> e : noChangeMap.entrySet()){
-	             System.out.println(e.getKey() + " : " + e.getValue());
-	         }
-			
-	         Map<String, Integer> noRepeatMap = new HashMap<String, Integer>();
-			
-	         for(DIVElement first : eList){	
-	             if(!first.getEleName().trim().isEmpty()){
-	                 first.generateElementDocForJava(dirAddress);
-	                 noRepeatMap.put(first.getEleName().toLowerCase(), 0);
-					// processing attribute for the Element
-					for(Attribute a : first.getSubElements()){
-					    if(!noRepeatMap.containsKey(a.getName().toLowerCase())){
-					        a.generateAttributesDocForJava(first, dirAddress);
-					        noRepeatMap.put(a.getName().toLowerCase(), 0);
-					    }
-					}
-					// processing Enumeration of the Element
-					first.generateEnumDocForJava(dirAddress);
-				}
-			}
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-	}
 }

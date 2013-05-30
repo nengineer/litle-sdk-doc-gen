@@ -10,13 +10,11 @@ import java.util.regex.Pattern;
 
 public class StringLocaterForJava implements StringLocater {
 	
-	List<Integer> locations = new ArrayList<Integer>();
-	String fileAddress;
-	//String keyword;
+	private List<Integer> locations = new ArrayList<Integer>();
+	private String fileAddress;
 	
 	public StringLocaterForJava(String add){
 		this.fileAddress = add;
-		//this.keyword = key;
 	}
 	
 	public void findLocations(String key){

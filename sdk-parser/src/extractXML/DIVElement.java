@@ -623,12 +623,12 @@ public class DIVElement {
 		return false;
 	}
 
-	public void generateElementDocForJava(String dirAddress){
+	public void generateElementDocForJava(String dirAddress,String version){
 
 		// data extracted from DIV element
 		DataExtracterForJava dx = new DataExtracterForJava();
 		dx.extractData(this);
-		dx.createData();
+		dx.createData(version);
 		String payLoad = dx.getData();
 
 		// finding parent and appending comments now
@@ -650,14 +650,14 @@ public class DIVElement {
 		}
 	}
 
-	public void generateElementDocForDotNet (String address){
+	public void generateElementDocForDotNet (String address, String version){
 		DataExtracterForDotNet dx = new DataExtracterForDotNet();
 		dx.extractData(this);
-		dx.createData();
+		dx.createData(version);
 		String payLoad = dx.getData();
 
 
-		// finding parent and appending commments now
+		// finding parent and appending comments now
 		for(String filename : DocGeneratorForDotNet.getFilenames()){
 			FileLocater fl = new FileLocater();
 			fl.locate(filename, address);
@@ -676,7 +676,7 @@ public class DIVElement {
 	}
 
 	//finding enumeration file types and appending enumeration over it
-	public void generateEnumDocForJava(String dirAddress){
+	public void generateEnumDocForJava(String dirAddress, String version){
 		for(Entry<String, String> e : this.getEnumerations().entrySet()){
 			FileLocater fenum = new FileLocater();
 			fenum.locate("typeenum", dirAddress);
@@ -686,7 +686,7 @@ public class DIVElement {
 					senum.findLocationsForEnum(e.getKey());
 					DataExtracterForJava de = new DataExtracterForJava();
 					de.extractDataForEnum(e.getValue());
-					de.createData();
+					de.createData(version);
 					String enumData = de.getData();
 					//System.out.println(fileAdd);
 					if(!senum.getLocations().isEmpty()){
@@ -698,7 +698,7 @@ public class DIVElement {
 		}
 	}
 	//finding enumeration file types and appending enumeration over it
-	public void generateEnumDocForDotNet(String dirAddress){
+	public void generateEnumDocForDotNet(String dirAddress, String version){
 		for(String filename : DocGeneratorForDotNet.getFilenames()){
 			FileLocater fenum = new FileLocater();
 			fenum.locate(filename, dirAddress);
@@ -718,7 +718,7 @@ public class DIVElement {
 					    if(!senum.getLocations().isEmpty()){
     					    DataExtracterForDotNet de = new DataExtracterForDotNet();
     					    de.extractDataForEnum(e.getValue());
-    					    de.createData();
+    					    de.createData(version);
     					    String enumData = de.getData();
     						System.out.println("Enumeration : " + e.getKey() + " updated comments at : " + senum.getLocations().size() + "for file : " + fileAddenum);
     						new ContentCombiner(senum.getLocations(), new LineMarkerForDotNet()).combine(new File(fileAddenum), enumData);

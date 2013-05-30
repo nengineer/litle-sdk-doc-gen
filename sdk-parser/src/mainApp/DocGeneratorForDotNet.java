@@ -22,11 +22,7 @@ public class DocGeneratorForDotNet {
 
 	private final static String[] filenames = {"XmlRequestFields.cs", "XmlResponseFields.cs", "XmlFields.cs"};
 
-	public static void main(String[] args){
-		new DocGeneratorForDotNet().run("/usr/local/litle-home/zhe/parsePDF/xml_XML_Ref_elements.xml","/usr/local/litle-home/zhe/parsePDF/dotnet/LitleSdkForNet");
-	}
-
-	public void run(String fileaddress, String dirAddress){
+	public void run(String fileaddress, String dirAddress, String version){
 
 		try{
 			ReadXMLFile rd = new ReadXMLFile();
@@ -41,11 +37,11 @@ public class DocGeneratorForDotNet {
 				if(!first.getEleName().trim().isEmpty()){
 					// data extracted from DIV element
 
-					first.generateElementDocForDotNet(dirAddress);
+					first.generateElementDocForDotNet(dirAddress, version);
 
 					// processing Enumeration of the Element
 					if(!first.getEnumerations().isEmpty()){
-					    first.generateEnumDocForDotNet(dirAddress);
+					    first.generateEnumDocForDotNet(dirAddress, version);
 					}
 
 

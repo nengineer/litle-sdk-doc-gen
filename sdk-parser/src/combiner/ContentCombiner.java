@@ -15,10 +15,10 @@ import java.util.Map;
 
 public class ContentCombiner {
 
-	List<Integer> locations = new ArrayList<Integer>();
-	List<String> dataList; 
-	List<Integer> flaggedlocations;
-	LineMarker lineMarker;
+	private List<Integer> locations = new ArrayList<Integer>();
+	private List<String> dataList; 
+	private List<Integer> flaggedlocations;
+	private LineMarker lineMarker;
 	
 	
 	public ContentCombiner(List<Integer> loclist, LineMarker lm){
@@ -30,87 +30,13 @@ public class ContentCombiner {
 	}
 	
 	
-    public static void main( String[] args )
-    {	
-    	try{
-    		
-    		//String data = "This new content will append to the middle of the file\n";
-    		String data1 = "catch me if you can";
-    		
-    		File file =new File("/usr/local/litle-home/vchouhan/Desktop/project/test1/text.txt");
-    		
-    		
-    		//if file doesnt exists, then create it
-    		if(!file.exists()){
-    			file.createNewFile();
-    		}
-    		
-    		List<Integer> tl = new ArrayList<Integer>();
-    		LineMarker lm = new LineMarkerForRuby();
-    		
-    		tl.add(6);
-    		tl.add(10);
-    		
-    		//new ContentCombiner(tl, lm).combine(file, data1);
-    		
-    		List<String> list1 = new ArrayList<String>();
-    		
-    		list1.add("#updated_first string added");
-    		
-    		list1.add("#updated_second string added");
-    		
-    		List<String> list2 = new ArrayList<String>();
-            
-            list2.add("#updated_third string added");
-            
-            list2.add("#updated_fourth string added");
-    		
-    		Map<Integer, List<String>> testmap = new HashMap<Integer, List<String>>();
-    		
-    		testmap.put(5, list1);
-    		
-    		testmap.put(9, list2);
-    		ContentCombiner cr = new ContentCombiner(tl,lm);
-    		cr.removeUnchangedDocs(file);
-    		
-    		for(int i : cr.getFlaggedLocations()){
-    		    System.out.println(i);
-    		}
-    		
-//    		ContentCombiner cnew = new ContentCombiner(tl, lm);
-//    		
-//    		cnew.storeContent(file);
-//     		
-//    		cnew.appendContent(file, testmap);
-////    		
-    		
-//    		i am first line
-//    		i am second line
-//    		i am third line
-//    		i am fourth line
-//    		i am fifth line
-//    		i am sixth line
-//    		i am seventh line
-//    		i am eight line
-//    		i am nine line
-//    		i am tenth line
-    		
-    		
-    		//new ContentCombiner(7).combine(file, data1); 
-    
-    	}catch(IOException e){
-    		e.printStackTrace();
-    	} 
-    }
-    
     
     
     public void combine(File file, String data) {
     	try{
-    		ContentCombiner cc = this;
-			cc.storeContent(file);
-			cc.processContent();
-			cc.appendContentAt(file,data);  		
+    		storeContent(file);
+			processContent();
+			appendContentAt(file,data);  		
 			//cc.showContent(file);
     	}catch(Exception e){
     		e.printStackTrace();
@@ -121,13 +47,12 @@ public class ContentCombiner {
     
     public void storeContent(File file) {
     	try{
-        	ContentCombiner cc = this;
         	FileReader filereader = new FileReader(file);
     		BufferedReader reader = new BufferedReader(filereader);
     		String currentLine;
     		while((currentLine = reader.readLine()) !=null){
     			//String line = reader.readLine();
-    			cc.getDataList().add(currentLine);
+    			getDataList().add(currentLine);
     		}
     		reader.close();
     	}catch(Exception e){
@@ -139,21 +64,19 @@ public class ContentCombiner {
     
     public void appendContentAt(File file, String data) {
     	try{
-        	ContentCombiner cc = this;
-        	
         	int count = 0;
         	
         	FileWriter filewriter = new FileWriter(file);
     	    BufferedWriter bufferwriter = new BufferedWriter(filewriter);
-        	while(count < cc.getDataList().size()){
-        		if(cc.getFlaggedLocations().contains(count)){
+        	while(count < getDataList().size()){
+        		if(getFlaggedLocations().contains(count)){
         			count++;
         		}else{
-               		bufferwriter.write(cc.getDataList().get(count)+ "\n");
+               		bufferwriter.write(getDataList().get(count)+ "\n");
             		count++;
         		}
-        		if(cc.getLocations().contains(count+1)){
-                	String payload = cc.insertMargin(data,cc.getMargin(cc.getDataList().get(count)));
+        		if(getLocations().contains(count+1)){
+                	String payload = insertMargin(data,getMargin(getDataList().get(count)));
                 	bufferwriter.write(payload+ "\n");
         		}
         	}
@@ -249,41 +172,26 @@ public class ContentCombiner {
     }
     
 	public void markLines(int location){
-		
-//		List<String> dlist = this.getDataList();
-//		int i = location-1;		
-//		while(dlist.get(i).trim().isEmpty()){
-//			i--;
-//		}
-//		if(dlist.get(i).trim().endsWith("*/")){
-//			while(!dlist.get(i).trim().contains("/*")){
-//				getFlaggedLocations().add(i);
-//				i--;
-//			}
-//			getFlaggedLocations().add(i);
-//		}
 		this.lineMarker.markLines(location, this);
 	}
 	
 	public void removeUnchangedDocs(File file){
-		ContentCombiner cc = this;
 		
-		cc.storeContent(file);
-		cc.processContent();
-		cc.removeFlagged(file);
+		storeContent(file);
+		processContent();
+		removeFlagged(file);
 	}
 	
 	public void removeFlagged(File file){
     	try{
-        	ContentCombiner cc = this;
         	int count = 0;
         	FileWriter filewriter = new FileWriter(file);
     	    BufferedWriter bufferwriter = new BufferedWriter(filewriter);
-        	while(count < cc.getDataList().size()){
-        		if(cc.getFlaggedLocations().contains(count)){
+        	while(count < getDataList().size()){
+        		if(getFlaggedLocations().contains(count)){
         			count++;
         		}else{
-               		bufferwriter.write(cc.getDataList().get(count)+ "\n");
+               		bufferwriter.write(getDataList().get(count)+ "\n");
             		count++;
         		}
         	}

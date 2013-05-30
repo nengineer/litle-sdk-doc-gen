@@ -9,12 +9,10 @@ import extractXML.DIVElement;
 
 public class DataExtracterForRuby implements DataExtracter {
 
-    String data;
-    List<String> dataList = new ArrayList<String>();
+    private String data;
+    private List<String> dataList = new ArrayList<String>();
     @Override
     public void extractData(DIVElement div) {
-        // TODO Auto-generated method stub
-
         // TODO Auto-generated method stub
         if(!div.getDescrip().trim().isEmpty()){
             if(div.getDescrip().split("\\.").length > 1){
@@ -28,13 +26,15 @@ public class DataExtracterForRuby implements DataExtracter {
                 this.getDList().add(div.getDescrip());
             }
         }
-        this.getDList().add("The " + div.getEleName() + "field is required by :");
-        List<String> plist = new ArrayList<String>();       
-        plist = div.getParentElements();
-        for(String p : plist){
-            this.getDList().add("- @see " + p);
-        }
         
+        if(!div.getParentElements().isEmpty()){
+            this.getDList().add("The " + div.getEleName() + "field is required by :");
+            List<String> plist = new ArrayList<String>();       
+            plist = div.getParentElements();
+            for(String p : plist){
+                this.getDList().add("- @see " + p);
+            }
+        }
         if(!div.getNotes().isEmpty()){
             this.getDList().add("<b>Note : ");
             
@@ -44,8 +44,6 @@ public class DataExtracterForRuby implements DataExtracter {
             
             this.getDList().add("</b>");
         }
-        
-        
         
         for(Entry<String, String> e: div.getAttrs().entrySet()){
             this.getDList().add(e.getKey().trim() + " : " + e.getValue().trim());
@@ -107,7 +105,6 @@ public void extractDataForAttr(Attribute a){
         
         if(!a.getExtra().isEmpty()){
             if(a.getExtra().split("\\.").length > 1){
-                //da.getDList().add("Notes : " + "\n");
                 String[] parts = a.getExtra().split("\\.");
                 for(String p : parts){
                     this.getDList().add(p.trim());
@@ -138,16 +135,10 @@ public void extractDataForAttr(Attribute a){
     public void createData() {
         // TODO Auto-generated method stub
         
-        //this.setData("/**" + "\n");
         this.setData("");
         for(String s : this.getDList()){
             this.setData(this.getData() + "# " + s + "\n");
         }       
-        
-        //dx.setData(dx.getData() + " *@version : " + version);
-        
-        //this.setData(this.getData() + " */");
-    
     }
 
     @Override
@@ -159,17 +150,15 @@ public void extractDataForAttr(Attribute a){
     @Override
     public void createData(String version) {
         // TODO Auto-generated method stub
-        //this.setData("/**" + "\n");
         this.setData("");
         for(String s : this.getDList()){
             this.setData(this.getData() + "# " + s + "\n");
         }       
         
-        this.setData(this.getData() + "#@author : sdksupport@litle.com");
+        this.setData(this.getData() + "# @author : sdksupport@litle.com\n");
         
-        this.setData(this.getData() + "#@version : " + version);
+        this.setData(this.getData() + "# @version : " + version);
         
-        //this.setData(this.getData() + " */");
     }
 
     /**

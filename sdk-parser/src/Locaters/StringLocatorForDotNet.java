@@ -10,8 +10,8 @@ import java.util.regex.Pattern;
 
 public class StringLocatorForDotNet implements StringLocater {
 
-	List<Integer> locations;
-	String fileAddress;
+	private List<Integer> locations;
+	private String fileAddress;
 
 	public StringLocatorForDotNet(String add){
 	    this.locations = new ArrayList<Integer>();

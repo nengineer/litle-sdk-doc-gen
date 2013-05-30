@@ -9,8 +9,8 @@ import formatter.StringFormatter;
 
 public class DataExtracterForDotNet implements DataExtracter{
 
-	String data;
-	List<String> dataList;
+	private String data;
+	private List<String> dataList;
 
 	public DataExtracterForDotNet(){
 		this.data = "";

@@ -32,14 +32,4 @@ public class StringFormatter {
         return source.replaceAll("\\(.*\\)","").trim();
     }
 
-    public static void main(String[] args){
-        String x = "\"\"(empty)zhen";
-        System.out.println(new StringFormatter().trimParenForEnum(x));
-
-        Pattern p2 = Pattern.compile("\\[System\\.Xml\\.Serialization\\.XmlEnumAttribute\\(\""+"MASS AFFLU"+"\"\\)\\]");
-        Matcher m2 = p2.matcher("[System.Xml.Serialization.XmlEnumAttribute(\"MASS AFFLU\")]");
-        System.out.println(m2.find());
-    }
-
-
 }

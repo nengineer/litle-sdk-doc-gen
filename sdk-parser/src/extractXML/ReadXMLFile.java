@@ -26,18 +26,17 @@ public class ReadXMLFile {
 
 	public void extractDIVs(String fileaddress) throws ParserConfigurationException, SAXException{
 
-		  FileWriter fstream = null;
-		try {
+	    FileWriter fstream = null;
+	    try {
+	        
+	        File fXmlFile = new File(fileaddress);
 
-			File fXmlFile = new File(fileaddress);
-
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+	        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+	        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(fXmlFile);
 			doc.getDocumentElement().normalize();
-			//ReadXMLFile rd = new ReadXMLFile();
 
-			fstream = new FileWriter("/usr/local/litle-home/zhe/parsePDF/parsedOutput.txt");
+			fstream = new FileWriter("/usr/local/litle-home/vchouhan/Desktop/project/parsedOutput.txt");
 
 			BufferedWriter out = new BufferedWriter(fstream);
 
@@ -76,29 +75,4 @@ public class ReadXMLFile {
 	public ArrayList<DIVElement> getDIVs(){
 		return DIVlist;
 	}
-
-
-	public static void main(String argv[]) {
-
-    try {
-
-	File fXmlFile = new File(argv[0]);
-
-	DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-	DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-	Document doc = dBuilder.parse(fXmlFile);
-
-	doc.getDocumentElement().normalize();
-
-	ReadXMLFile extractor = new ReadXMLFile();
-
-	System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
-
-	extractor.extractDIVs(argv[0]);
-
-    } catch (Exception e) {
-	e.printStackTrace();
-    }
-  }
-
 }
