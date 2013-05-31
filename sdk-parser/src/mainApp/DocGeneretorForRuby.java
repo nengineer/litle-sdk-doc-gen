@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import Locaters.FileLocater;
+import Locaters.FileLocaterForRuby;
 
 import combiner.ContentCombiner;
 import combiner.LineMarkerForJava;
@@ -35,14 +36,13 @@ public class DocGeneretorForRuby {
             
             appendToMap(eList, noChangeMap);
             
-            FileLocater fnew = new FileLocater();
+            FileLocaterForRuby fnew = new FileLocaterForRuby();
             
             fnew.locate("xmlfields.rb", dirAddress);
             
             Map<Integer, List<String>> appendmap = new HashMap<Integer, List<String>>();
             
-            
-            
+           
             for(String add : fnew.getResult()){
                 if(new File(add).canWrite()){
                     removeOldCommentsFromFile(add,eList,noChangeMap);
@@ -50,12 +50,12 @@ public class DocGeneretorForRuby {
                     ContentCombiner cnew = new ContentCombiner(new ArrayList<Integer>(), new LineMarkerForRuby());
                     cnew.storeContent(new File(add));
 
-                    for(DIVElement e : eList){
-                        if(!e.getEleName().trim().isEmpty()){
-                            generateElementCommentsForRuby(e,noChangeMap,version,cnew, appendmap);
+                    for(DIVElement element : eList){
+                        if(!element.getEleName().trim().isEmpty()){
+                            generateElementCommentsForRuby(element,noChangeMap,version,cnew, appendmap);
 
-                            for(Attribute a : e.getSubElements()){
-                                generateAttributeCommentsForRuby(a,e,noChangeMap,version,cnew,appendmap);
+                            for(Attribute attr : element.getSubElements()){
+                                generateAttributeCommentsForRuby(attr,element,noChangeMap,version,cnew,appendmap);
                             }
                         }
                     }
@@ -149,11 +149,14 @@ public class DocGeneretorForRuby {
                         && cnew.getDataList().get(i).toLowerCase().contains("_node")
                         && cnew.getDataList().get(i).toLowerCase().contains("default_value")
                         && !cnew.getDataList().get(i).toLowerCase().contains("if")){
+                    e.setNChanges(e.getNChanges()+1);
                     List<String> temp = new ArrayList<String>();
                     temp.add(dx.getData());
                     appendmap.put(i, temp);
                 }
             }
+            
+            System.out.println("Element :" + e.getEleName() + " processed at :" + e.getNChanges() + " places" );
         }
     }
     
@@ -163,19 +166,28 @@ public class DocGeneretorForRuby {
             if(noChangeMap.containsKey(a.getName().toLowerCase())){
                 noChangeMap.remove(a.getName());
                 DataExtracterForRuby da = new DataExtracterForRuby();
-                da.extractData(e);
+                da.extractDataForAttr(a);
                 da.createData(version);
                 
                 for(int i = 0;i< cnew.getDataList().size();i++){
-                    if(cnew.getDataList().get(i).toLowerCase().contains(":" +a.getName().toLowerCase() + ",")
-                            && cnew.getDataList().get(i).toLowerCase().contains("_node")
-                            && cnew.getDataList().get(i).toLowerCase().contains("default_value")
-                            && !cnew.getDataList().get(i).toLowerCase().contains("if")){
-                        List<String> temp = new ArrayList<String>();
-                        temp.add(da.getData());
-                        appendmap.put(i, temp);
+                    if(cnew.getDataList().get(i).trim().toLowerCase().startsWith("class") 
+                            && cnew.getDataList().get(i).toLowerCase().contains(e.getEleName().toLowerCase())){
+                        while(!cnew.getDataList().get(i).trim().startsWith("end")){
+                            if(cnew.getDataList().get(i).toLowerCase().contains(":" +a.getName().toLowerCase() + ",")
+                                    && cnew.getDataList().get(i).toLowerCase().contains("_node")
+                                    && cnew.getDataList().get(i).toLowerCase().contains("default_value")
+                                    && !cnew.getDataList().get(i).toLowerCase().contains("if")){
+                                a.setNChanges(a.getNChanges()+1);
+                                List<String> temp = new ArrayList<String>();
+                                temp.add(da.getData());
+                                appendmap.put(i, temp);
+                            }
+                            i++;
+                        }
                     }
                 }
+                
+                System.out.println("Attribute :" + a.getName() + " processed at :" + a.getNChanges() + " places");
             }
         }
     }
