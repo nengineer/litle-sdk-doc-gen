@@ -129,7 +129,7 @@ public class DataExtracterForDotNet implements DataExtracter{
 		for(String s : this.getDList()){
 			this.setData(this.getData()+ "/// " + s + "\n");
 		}
-		this.setData(this.getData() + "/// <author>SDK Support</version>");
+		this.setData(this.getData() + "/// <author>sdksupport@litle.com</author>");
 	}
 
 	@Override
@@ -138,7 +138,7 @@ public class DataExtracterForDotNet implements DataExtracter{
 			this.setData(this.getData()+ "/// " + s + "\n");
 		}
 		this.setData(this.getData() + "/// <version>" + version + "</version>\n");
-		this.setData(this.getData() + "/// <author>SDK Support</version>");
+		this.setData(this.getData() + "/// <author>sdksupport@litle.com</author>");
 	}
 
 	public void setData(String d){
