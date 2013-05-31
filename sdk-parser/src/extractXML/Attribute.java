@@ -3,11 +3,15 @@ package extractXML;
 import java.io.File;
 
 import Locaters.FileLocater;
+import Locaters.FileLocaterForDotNet;
 import Locaters.StringLocaterForJava;
+import Locaters.StringLocatorForDotNet;
 
 import combiner.ContentCombiner;
+import combiner.LineMarkerForDotNet;
 import combiner.LineMarkerForJava;
 
+import extracter.DataExtracterForDotNet;
 import extracter.DataExtracterForJava;
 
 public class Attribute {
@@ -161,6 +165,26 @@ public class Attribute {
 			}
 		}
 	}
+
+	   public void generateAttributesDocForDotNet(DIVElement ele, String dirAddress, String version){
+	        DataExtracterForDotNet da = new DataExtracterForDotNet();
+	        da.extractDataForAttr(this);
+	        da.createData(version);
+	        String Attrdata = da.getData();
+	        FileLocaterForDotNet fattr = new FileLocaterForDotNet();
+	        fattr.locate(ele.getEleName().toLowerCase(), dirAddress);
+	        if(!(fattr.getResult() == null)){
+	            for(String fileAddattr : fattr.getResult()){
+	                StringLocatorForDotNet sattr = new StringLocatorForDotNet(fileAddattr);
+	                    sattr.findLocationsForAttrs(ele.getEleName().toLowerCase(), this.getName().toLowerCase());
+	                    if(!sattr.getLocations().isEmpty()){
+	                        this.setNChanges(this.getNChanges() + sattr.getLocations().size());
+	                        System.out.println("Attribute : " + this.getName() +"("+ ele.getEleName() + ")" + " updated comments at : " + sattr.getLocations().size() + "for file : " + fileAddattr);
+	                        new ContentCombiner(sattr.getLocations(), new LineMarkerForDotNet()).combine(new File(fileAddattr), Attrdata);
+	                    }
+	            }
+	        }
+	    }
 
 	public int getNChanges() {
 		// TODO Auto-generated method stub

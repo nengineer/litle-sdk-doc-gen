@@ -28,15 +28,16 @@ public class ReadXMLFile {
 
 	    FileWriter fstream = null;
 	    try {
-	        
+
 	        File fXmlFile = new File(fileaddress);
+	        if(fXmlFile.canRead()){
 
 	        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 	        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(fXmlFile);
 			doc.getDocumentElement().normalize();
 
-			fstream = new FileWriter("/usr/local/litle-home/vchouhan/Desktop/project/parsedOutput.txt");
+			fstream = new FileWriter("/usr/local/litle-home/zhe/parsePDF/parsedOutput");
 
 			BufferedWriter out = new BufferedWriter(fstream);
 
@@ -64,7 +65,9 @@ public class ReadXMLFile {
 
 				}
 			}
+
 			out.close();
+	        }
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

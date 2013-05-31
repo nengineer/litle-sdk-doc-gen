@@ -42,6 +42,47 @@ public class StringLocatorForDotNet implements StringLocater {
 		}
 	}
 
+	public void findLocationsForAttrs(String elename, String attrname){
+	    File temp = new File(this.getFileAddress());
+	    if(temp.canRead()){
+	           try {
+	                BufferedReader reader = new BufferedReader(new FileReader(temp));
+	                int lineNum = 0;
+	                String currentLine;
+	                boolean lock = false;
+	                while((currentLine = reader.readLine()) != null){
+	                    lineNum++;
+	                    Pattern p = Pattern.compile("public .* " + "class" + "\\b" + elename + "\\b");
+	                    Matcher m = p.matcher(currentLine.toLowerCase());
+
+	                    if( m.find() && !lock){
+	                        lock = true;
+	                    }
+	                    else if(lock){
+	                        Pattern endp = Pattern.compile("public .* " + "class|enum");
+	                        Matcher endm = endp.matcher(currentLine.toLowerCase());
+	                        if(endm.find()){
+	                            lock = false;
+	                            break;
+
+	                        }
+	                        else{
+	                            Pattern attrp = Pattern.compile("public .*" + "\\b" + attrname + "\\b");
+	                            Matcher attrm = attrp.matcher(currentLine.toLowerCase());
+	                            if(attrm.find()){
+	                                this.addToLocations(lineNum);
+	                            }
+	                        }
+	                    }
+	                }
+	                reader.close();
+	            }catch(Exception e){
+	                e.printStackTrace();
+	            }
+	    }
+
+	}
+
 	public void findLocationsForEnum(String key, ArrayList<String> keys){
 
 		File temp = new File(this.getFileAddress());

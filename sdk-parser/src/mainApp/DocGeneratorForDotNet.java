@@ -12,13 +12,12 @@ import Locaters.FileLocater;
 
 import combiner.LineMarkerForDotNet;
 
+import extractXML.Attribute;
 import extractXML.DIVElement;
 import extractXML.ReadXMLFile;
 //import Locaters.StringLocater;
 
 public class DocGeneratorForDotNet {
-
-//{"XmlFields.cs"};
 
 	private final static String[] filenames = {"XmlRequestFields.cs", "XmlResponseFields.cs", "XmlFields.cs"};
 
@@ -43,6 +42,13 @@ public class DocGeneratorForDotNet {
 					if(!first.getEnumerations().isEmpty()){
 					    first.generateEnumDocForDotNet(dirAddress, version);
 					}
+					if(!first.getSubElements().isEmpty()){
+                        for(Attribute a : first.getSubElements()){
+                            a.generateAttributesDocForDotNet(first, dirAddress, version);
+
+                        }
+					}
+
 
 
 				}

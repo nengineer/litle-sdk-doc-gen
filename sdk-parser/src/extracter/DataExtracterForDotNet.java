@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import extractXML.Attribute;
 import extractXML.DIVElement;
 import formatter.StringFormatter;
 
@@ -79,11 +80,56 @@ public class DataExtracterForDotNet implements DataExtracter{
 
 	}
 
+	public void extractDataForAttr(Attribute a){
+	    this.addToDList("<summary>");
+        this.addToDList("Name : " + a.getName());
+        this.addToDList("Type : " + a.getType());
+        if(a.isRequired()){
+            this.addToDList("It is required");
+        }else{
+            this.addToDList("It is optional");
+        }
+
+        if(!a.getDescription().trim().isEmpty()){
+            for (String s: new StringFormatter().splitSentences(a.getDescription().trim())) {
+                this.addToDList(s);
+              }
+        }
+        this.addToDList("</summary>");
+        this.addToDList("<remarks>");
+        if(!a.getMaxLength().isEmpty()){
+            this.addToDList("Max length : " + a.getMaxLength());
+        }
+        if(!a.getMinLength().isEmpty()){
+            this.addToDList("Min length : " + a.getMinLength());
+        }
+        if(!a.getTotalDigits().isEmpty()){
+            this.addToDList("Total digits : " + a.getTotalDigits());
+        }
+        if(!a.getValidValues().isEmpty()){
+            this.addToDList("Valid Values : " + a.getValidValues());
+        }
+        if(!a.getNote().isEmpty()){
+            this.addToDList("<b>Note: ");
+            for(String note : new StringFormatter().splitSentences(a.getNote())){
+                    this.addToDList(note);
+            }
+            this.addToDList("</b>");
+        }
+        if(!a.getExtra().isEmpty()){
+            for (String s: new StringFormatter().splitSentences(a.getExtra().trim())) {
+                this.addToDList(s);
+              }
+        }
+        this.addToDList("</remarks>");
+	}
+
 	@Override
 	public void createData() {
 		for(String s : this.getDList()){
 			this.setData(this.getData()+ "/// " + s + "\n");
 		}
+		this.setData(this.getData() + "/// <author>SDK Support</version>");
 	}
 
 	@Override
@@ -92,6 +138,7 @@ public class DataExtracterForDotNet implements DataExtracter{
 			this.setData(this.getData()+ "/// " + s + "\n");
 		}
 		this.setData(this.getData() + "/// <version>" + version + "</version>");
+		this.setData(this.getData() + "/// <author>SDK Support</version>");
 	}
 
 	public void setData(String d){
