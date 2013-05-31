@@ -40,32 +40,49 @@ public class DocGeneratorForJava {
 
 			// cleaning the old auto generated comments from the java package 
 			Map<String, Integer> noChangeMap = new HashMap<String, Integer>();
-			
 			appendToMap(eList, noChangeMap);
-			
 			removeOldComments(dirAddress, noChangeMap);
 	            
 			for(Entry<String, Integer> e : noChangeMap.entrySet()){
 			    System.out.println(e.getKey() + " : " + e.getValue());
 			}
 			
-			Map<String, Integer> noRepeatMap = new HashMap<String, Integer>();
-			
 			for(DIVElement first : eList){	
 			    if(!first.getEleName().trim().isEmpty()){
 			        first.generateElementDocForJava(dirAddress, version);
-			        noRepeatMap.put(first.getEleName().toLowerCase(), 0);
 	                 // processing attribute for the Element
 			        for(Attribute a : first.getSubElements()){
-			            if(!noRepeatMap.containsKey(a.getName().toLowerCase())){
 			                a.generateAttributesDocForJava(first, dirAddress, version);
-			                noRepeatMap.put(a.getName().toLowerCase(), 0);
-			            }
 			        }
 			        // processing Enumeration of the Element
 			        first.generateEnumDocForJava(dirAddress, version);
 			    }
 			}
+			
+			System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+			System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+			System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+			System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+			System.out.println("Fields without documentation::");
+			for(DIVElement ele : eList){
+			    if(!ele.getEleName().trim().isEmpty()){
+			        if(ele.getNChanges() == 0){
+			            System.out.println("Element : " + ele.getEleName());
+			        }
+			        for(Attribute attr : ele.getSubElements()){
+			            if(attr.getNChanges() == 0){
+			                System.out.println("Attribute : " + attr.getName() + 
+			                        " for Element : " + ele.getEleName());
+			            }
+			        }
+			    }
+			}
+			
+			System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+			System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+			System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+			System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+			
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -98,27 +115,29 @@ public class DocGeneratorForJava {
 	 */
 	public void removeOldComments(String dirAddress, Map<String, Integer> noChangeMap){
         FileLocater ftest = new FileLocater();
-        ftest.locate("java", dirAddress + "/generated/com/litle/sdk/generate/");
-        for(String fileAdd : ftest.getResult()){
-            if(new File(fileAdd).canWrite()){
-                System.out.println("processing file : " + fileAdd);
-                ContentCombiner ctest = new ContentCombiner(new ArrayList<Integer>(), new LineMarkerForJava());
-                ctest.storeContent(new File(fileAdd));
-                for(String cline : ctest.getDataList()){
-                    if(cline.trim().startsWith("public")){
-                        for(Entry<String, Integer> e : noChangeMap.entrySet()){
-                            if(cline.toLowerCase().contains("set" + e.getKey().toLowerCase() + "(")
-                                    ||cline.toLowerCase().contains("get" + e.getKey().toLowerCase() + "(")
-                                    ||cline.toLowerCase().contains("is" + e.getKey().toLowerCase() + "(")){
-                                ctest.getLocations().add(ctest.getDataList().indexOf(cline)+1);
-                                e.setValue(e.getValue() + ctest.getLocations().size());
+        if(new File(dirAddress + "/generated/com/litle/sdk/generate/").isDirectory()){
+            ftest.locate("java", dirAddress + "/generated/com/litle/sdk/generate/");
+            for(String fileAdd : ftest.getResult()){
+                if(new File(fileAdd).canWrite()){
+                    System.out.println("processing file : " + fileAdd);
+                    ContentCombiner ctest = new ContentCombiner(new ArrayList<Integer>(), new LineMarkerForJava());
+                    ctest.storeContent(new File(fileAdd));
+                    for(String cline : ctest.getDataList()){
+                        if(cline.trim().startsWith("public")){
+                            for(Entry<String, Integer> e : noChangeMap.entrySet()){
+                                if(cline.toLowerCase().contains("set" + e.getKey().toLowerCase() + "(")
+                                        ||cline.toLowerCase().contains("get" + e.getKey().toLowerCase() + "(")
+                                        ||cline.toLowerCase().contains("is" + e.getKey().toLowerCase() + "(")){
+                                    ctest.getLocations().add(ctest.getDataList().indexOf(cline)+1);
+                                    e.setValue(e.getValue() + ctest.getLocations().size());
+                                }
                             }
                         }
                     }
+                    System.out.println(" at " + ctest.getLocations().size() + " number of places");
+                    ctest.processContent();
+                    ctest.removeFlagged(new File(fileAdd));
                 }
-                System.out.println(" at " + ctest.getLocations().size() + " number of places");
-                ctest.processContent();
-                ctest.removeFlagged(new File(fileAdd));
             }
         }
 	}
