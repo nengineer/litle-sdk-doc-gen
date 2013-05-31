@@ -168,57 +168,57 @@ public class DIVElement {
 	 *
 	 * @param div
 	 */
-	public void processDIV(Element div, BufferedWriter out) {
+	public void processDIV(Element div) {  //@param BufferedWriter out to be added to get parsed output in file
 		this.extractItemName(div);
 		this.extractNotesOptional(div);
 		this.extractSubHeaderElement(div);
-		if(out != null){
-    		if(this.eleName.contains(",")){
-    			String[] eleNames = this.eleName.split(",");
-    			for(String eleName: eleNames){
-    				writeToFile(div, out, eleName);
-    			}
-    		}
-    		else{
-    			writeToFile(div,out, this.eleName);
-    		}
-		}
+//		if(out != null){
+//    		if(this.eleName.contains(",")){
+//    			String[] eleNames = this.eleName.split(",");
+//    			for(String eleName: eleNames){
+//    				writeToFile(div, out, eleName);
+//    			}
+//    		}
+//    		else{
+//    			writeToFile(div,out, this.eleName);
+//    		}
+//		}
 
 	}
 
-	public void writeToFile(Element div, BufferedWriter out, String eleName){
-		try {
-		out.write("========================================================================================\n");
-		out.write("Item Name: "+ eleName + "\n");
-		out.write("Description: "+ this.descrip+ "\n");
-		for (Entry<String, String> i : attrs.entrySet()) {
-			out.write("Key Attributes: " + i.getKey() + "| "
-					+ i.getValue() + "\n");
-		}
-		for (String s : notes) {
-			out.write("Note: " + s+ "\n");
-		}
-
-		for (String s : parentElements) {
-			out.write("Parent Element: " + s+ "\n");
-		}
-		for (Attribute a: subElements){
-			out.write(a.toString()+ "\n");
-		}
-		for (Entry<String, String> i : childElements.entrySet()) {
-			out.write("Child Element: " + i.getKey() + "| "
-					+ i.getValue()+ "\n");
-		}
-
-		for (Entry<String, String> i : enumerations.entrySet()) {
-			out.write("Enumeration: " + i.getKey() + "| "
-			+ i.getValue() + "\n");
-		}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+//	public void writeToFile(Element div, BufferedWriter out, String eleName){
+//		try {
+//		out.write("========================================================================================\n");
+//		out.write("Item Name: "+ eleName + "\n");
+//		out.write("Description: "+ this.descrip+ "\n");
+//		for (Entry<String, String> i : attrs.entrySet()) {
+//			out.write("Key Attributes: " + i.getKey() + "| "
+//					+ i.getValue() + "\n");
+//		}
+//		for (String s : notes) {
+//			out.write("Note: " + s+ "\n");
+//		}
+//
+//		for (String s : parentElements) {
+//			out.write("Parent Element: " + s+ "\n");
+//		}
+//		for (Attribute a: subElements){
+//			out.write(a.toString()+ "\n");
+//		}
+//		for (Entry<String, String> i : childElements.entrySet()) {
+//			out.write("Child Element: " + i.getKey() + "| "
+//					+ i.getValue()+ "\n");
+//		}
+//
+//		for (Entry<String, String> i : enumerations.entrySet()) {
+//			out.write("Enumeration: " + i.getKey() + "| "
+//			+ i.getValue() + "\n");
+//		}
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 
 	/**
 	 * extract the name of the XML element
@@ -667,6 +667,7 @@ public class DIVElement {
 						sl.findLocations(this.getEleName().toLowerCase());
 						//System.out.println(fileAdd);
 						if(!sl.getLocations().isEmpty()){
+						    this.setNChanges(this.getNChanges() + sl.getLocations().size());
 							System.out.println("Element : " + this.getEleName() + " updated comments at : " + sl.getLocations().size() + "for file : " + fileAdd);
 							new ContentCombiner(sl.getLocations(), new LineMarkerForDotNet()).combine(new File(fileAdd), payLoad);
 						}

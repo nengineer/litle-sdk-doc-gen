@@ -37,9 +37,9 @@ public class ReadXMLFile {
 			Document doc = dBuilder.parse(fXmlFile);
 			doc.getDocumentElement().normalize();
 
-			fstream = new FileWriter("/usr/local/litle-home/zhe/parsePDF/parsedOutput");
-
-			BufferedWriter out = new BufferedWriter(fstream);
+//			fstream = new FileWriter("/usr/local/litle-home/zhe/parsePDF/parsedOutput");
+//
+//			BufferedWriter out = new BufferedWriter(fstream);
 
 			if(doc != null){
 				NodeList nodes = doc.getElementsByTagName(XMLLookUpStrings.DIV);
@@ -48,12 +48,12 @@ public class ReadXMLFile {
 					if(node.getNodeType() == Node.ELEMENT_NODE){
 						Element e = (Element) node;
 						DIVElement div = new DIVElement();
-						div.processDIV(e, out);
+						div.processDIV(e);
 						if(div.getEleName().contains(",")){
 							String[] eleNames = div.getEleName().split(",");
 							for(String eleName: eleNames){
 							    DIVElement newDiv = new DIVElement();
-							    newDiv.processDIV(e, null);
+							    newDiv.processDIV(e);
 								newDiv.setEleName(eleName);
 								DIVlist.add(newDiv);
 							}
@@ -66,7 +66,7 @@ public class ReadXMLFile {
 				}
 			}
 
-			out.close();
+			//out.close();
 	        }
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

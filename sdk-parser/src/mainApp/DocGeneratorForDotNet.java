@@ -53,6 +53,29 @@ public class DocGeneratorForDotNet {
 
 				}
 			}
+			System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+			System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+			System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+			System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+			System.out.println("Fields without documentation::");
+			for(DIVElement ele : eList){
+			    if(!ele.getEleName().trim().isEmpty()){
+			        if(ele.getNChanges() == 0){
+			            System.out.println("Element : " + ele.getEleName());
+			        }
+			        for(Attribute attr : ele.getSubElements()){
+			            if(attr.getNChanges() == 0){
+			                System.out.println("Attribute : " + attr.getName() + 
+			                        " for Element : " + ele.getEleName());
+			            }
+			        }
+			    }
+			}
+	            
+			System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+			System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+			System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+			System.out.println("::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
 		}catch(Exception e){
 			e.printStackTrace();
 		}
